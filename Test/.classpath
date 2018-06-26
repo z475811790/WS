@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="D:/WS/lib/mybatis-3.4.6.jar"/>
+	<classpathentry kind="lib" path="D:/WS/lib/mybatis-spring-1.3.0.jar"/>
+	<classpathentry kind="lib" path="D:/WS/lib/mysql-connector-java-5.1.39.jar"/>
+	<classpathentry kind="lib" path="D:/WS/lib/spring-beans-4.2.0.RELEASE.jar"/>
+	<classpathentry kind="lib" path="D:/WS/lib/spring-context-4.2.0.RELEASE.jar"/>
+	<classpathentry kind="lib" path="D:/WS/lib/spring-core-4.2.0.RELEASE.jar"/>
+	<classpathentry kind="lib" path="D:/WS/lib/spring-expression-4.2.0.RELEASE.jar"/>
+	<classpathentry kind="lib" path="D:/WS/lib/spring-jdbc-4.2.0.RELEASE.jar"/>
+	<classpathentry kind="lib" path="D:/WS/lib/spring-tx-4.2.0.RELEASE.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
