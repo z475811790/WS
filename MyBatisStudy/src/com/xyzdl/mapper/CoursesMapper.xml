@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xyzdl.mapper.CoursesMapper">
+
+
+	<resultMap type="CoursesBean" id="coursesMap">
+		<!-- 在默认情况下，mybatis会自动在TypeAliasRegistry初始化的时候挂在很多jdk常用类， 所以javaType="java.lang.Integer"可以写成javaType="Integer" -->
+
+		<id property="id" column="id" javaType="java.lang.Integer" />
+		<result property="name" column="courses_name" javaType="java.lang.String" />
+	</resultMap>
+
+	<resultMap type="CoursesBean" id="couAndStu">
+		<id property="id" column="id" javaType="java.lang.Integer" />
+		<result property="name" column="courses_name" javaType="java.lang.String" />
+
+		<!-- 对于一个属性的类型是一个集合，就使用collection 对于一个属性的类型是一个类，就使用association -->
+		<collection property="student" column="id" select="findStudentByCourses"></collection>
+	</resultMap>
+
+
+
+	<select id="findCouById" resultMap="coursesMap">
+		select * from t_courses where id=#{id}
+	</select>
+
+
+
+	<!-- 有学生表，课程表这两张表都没有外键，我们就要使用第三张关联表。我们就要根据课程表的fk_cou_id，把学生的id值得到。 对于多对多那么这个学生的id值就不可能是一个值 。在数据库里就要使用in -->
+	<select id="findStudentByCourses" resultMap="com.xyzdl.mapper.StudentMapper.studentMap">
+		select * from t_student where id in (select fk_stu_id from t_stu_cou where fk_cou_id=#{id})
+	</select>
+
+	<select id="findCouAndStu" resultMap="couAndStu">
+		select * from t_courses where id=#{id}
+	</select>
+</mapper>

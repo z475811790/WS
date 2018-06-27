@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xyzdl.mapper.WifeMapper">
+	<resultMap type="WifeBean" id="husbandAndWife">
+		<id property="id" column="id" javaType="java.lang.Integer" />
+		<result property="name" column="name" javaType="java.lang.String" />
+
+		<association property="husband" column="fk_husband_id" javaType="HusbandBean"
+			select="com.xyzdl.mapper.HusbandMapper.selectHusbandById"></association>
+	</resultMap>
+
+	<select id="selectWifeByHusbandId" resultType="wifeBean">
+		select * from t_wife where fk_husband_id = #{id}
+	</select>
+	<select id="selectWifeById" resultMap="husbandAndWife">
+		select * from t_wife where id = #{id}
+	</select>
+</mapper>
