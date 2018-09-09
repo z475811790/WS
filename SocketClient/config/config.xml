@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configMap>
+	<challenge val="4758" />
+	<logFilePath val="log/log.txt" />
+	<dataCompress val="true" />
+	<host val="127.0.0.1" />
+	<port val="8080" />
+	<dbFile val="db/xyzdl.db" />
+	<dataTablePrefix val="t_" />
+	<poPackagePrefix val="com.po::" />
+</configMap>
