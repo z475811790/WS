@@ -12,7 +12,7 @@ import com.core.event.XEvent;
 import com.core.util.Hex;
 import com.infra.Config;
 import com.infra.event.EventType;
-import com.infra.net.Reactor;
+import com.infra.net.NServerSocket;
 import com.infra.net.SessionContext;
 import com.infra.net.NSocket;
 
@@ -23,88 +23,15 @@ public class TestReactor {
 	public void testBefore() throws Exception {
 		Dispatcher dispatcher = new Dispatcher();
 		dispatcher.add(EventType.CONNECT, this::onConnect, null);
-		dispatcher.add(EventType.SOCKET_DATA, this::onClientSocketData2, null);
 
-		Reactor reactor = new Reactor();
-		reactor.dispatcher = dispatcher;
+		NServerSocket reactor = new NServerSocket();
 	}
 
 	private void onConnect(XEvent xEvent) {
 		NSocket xSession = (NSocket) xEvent.data;
-		xSession.writeInt(Config.COMMUNICATION_PROTOCOL_VERSION);
+		// xSession.writeInt(Config.COMMUNICATION_PROTOCOL_VERSION);
 	}
 
-	private int state = 0;
-
-	private int len = 0;
-
-	private void onClientSocketData(XEvent xEvent) {
-		NSocket xSession = SessionContext.getSessionBySocketId(xEvent.data.toString());
-		try {
-			if (len == 0) {
-				if (xSession.bytesAvailable() < 4)
-					return;
-				else
-					len = xSession.readHeadLen();
-				if (len == 0) {
-					System.out.println("zero");
-					return;
-				}
-			}
-			if (len > 0 && xSession.bytesAvailable() < len) {
-				System.out.println("not all");
-				return;
-			}
-			byte[] bs = xSession.readBytes(len);
-			System.out.println("body:" + Hex.fromArray(bs));
-			len = 0;
-			if (state == 0) {
-				xSession.writeInt(Config.challenge);
-				state++;
-			} else if (state == 1) {
-				xSession.writeInt(Config.challenge);
-				state++;
-			} else if (state == 2) {
-
-			}
-
-			// xSession.writeBytes(bs);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void onClientSocketData2(XEvent xEvent) {
-		NSocket xSession = SessionContext.getSessionBySocketId(xEvent.data.toString());
-		try {
-			if (state == 0) {
-				if (xSession.bytesAvailable() < 4)
-					return;
-				int value = xSession.readHeadLen();
-				xSession.writeInt(256);
-				state++;
-			} else if (state == 1) {
-				if (len == 0) {
-					if (xSession.bytesAvailable() < 4)
-						return;
-					else
-						len = xSession.readHeadLen();
-					if (len == 0) {
-						System.out.println("zero");
-						return;
-					}
-				}
-				if (len > 0 && xSession.bytesAvailable() < len) {
-					System.out.println("not all");
-					return;
-				}
-				byte[] bs = xSession.readBytes(len);
-				System.out.println("body:" + Hex.fromArray(bs));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
 	@Test
 	public void testConnect() throws Exception {

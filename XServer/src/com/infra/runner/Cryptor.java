@@ -188,7 +188,7 @@ public class Cryptor {
 							Console.addMsg("s-sk:" + Hex.fromArray(aes.getSecretKey()));
 							byte[] encrypted = rsa.encrypt(aes.getSecretKey());
 							Console.addMsg("afterEn:" + Hex.fromArray(encrypted));
-							App.dispatch(ModuleEvent.SERVER_WORKER_CREATE_AES_COMPLETE, new Stringbytes(socketId, encrypted));
+							App.dispatch(ModuleEvent.CREATE_AES_COMPLETE, new Stringbytes(socketId, encrypted));
 						}
 					}
 				}

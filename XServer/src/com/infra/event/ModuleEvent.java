@@ -37,7 +37,7 @@ public class ModuleEvent {
 	/**
 	 * AESWoker创建AESKey完成
 	 */
-	public static final String SERVER_WORKER_CREATE_AES_COMPLETE = "SERVER_WORKER_CREATE_AES_COMPLETE";
+	public static final String CREATE_AES_COMPLETE = "SERVER_WORKER_CREATE_AES_COMPLETE";
 	/**
 	 * AES解密消息
 	 */

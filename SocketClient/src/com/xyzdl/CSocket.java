@@ -56,7 +56,7 @@ public class CSocket {
 		_stateHandlers[DETERMINE_VERSION] = this::receiveVersion;
 		_stateHandlers[RECEIVE_CHALLENGE] = this::receiveChallenge;
 		_stateHandlers[RECEIVE_SEC_KEY] = this::receiveSecretKey;
-		_stateHandlers[NORMAL] = this::read;
+		_stateHandlers[NORMAL] = this::readMsg;
 
 		Console.addMsg("Start to Connect...");
 		asyncConnect(Config.host, Config.port);
@@ -236,7 +236,7 @@ public class CSocket {
 		return 0;
 	}
 
-	private void read() {
+	private void readMsg() {
 		byte[] bs = readDataPack();
 		if (bs == null || bs.length == 0)
 			return;
@@ -271,20 +271,6 @@ public class CSocket {
 		return value;
 	}
 
-	private byte[] readBytes(int length) {
-		byte[] bs = new byte[length];
-		int a;
-		try {
-			a = _inputStream.read(bs);
-			if (a != length)
-				throw new Exception("EOF OR SOCKET CLOSED");
-		} catch (Exception e) {
-			e.printStackTrace();
-			onSocketClose();
-		}
-		return bs;
-	}
-
 	private int bytesLen = 0;
 
 	private byte[] readDataPack() {
@@ -314,10 +300,24 @@ public class CSocket {
 		return bs;
 	}
 
+	private byte[] readBytes(int length) {
+		byte[] bs = new byte[length];
+		int a;
+		try {
+			a = _inputStream.read(bs);
+			if (a != length)
+				throw new Exception("EOF OR SOCKET CLOSED");
+		} catch (Exception e) {
+			e.printStackTrace();
+			onSocketClose();
+		}
+		return bs;
+	}
+
 	private void writeDataPack(byte[] bs) {
 		if (bs == null || bs.length == 0)
 			return;
-		if (_socket != null && !_socket.isClosed() && _socket.isConnected()) {
+		if (!_socket.isClosed() && _socket.isConnected()) {
 			outQueue.offer(XUtil.intToBytes(bs.length));
 			outQueue.offer(bs);
 			flush();

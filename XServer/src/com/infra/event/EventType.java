@@ -16,10 +16,6 @@ public class EventType {
 	 */
 	public static final String CONNECT = "CONNECT";
 	/**
-	 * 数据到达事件
-	 */
-	public static final String SOCKET_DATA = "SOCKET_DATA";
-	/**
 	 * 连接关闭事件
 	 */
 	public static final String CLOSE = "CLOSE";

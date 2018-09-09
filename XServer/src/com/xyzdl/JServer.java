@@ -11,7 +11,7 @@ import com.core.Console;
 import com.core.event.XEvent;
 import com.core.loader.LoaderBean;
 import com.infra.Config;
-import com.infra.net.XServerSocket;
+import com.infra.net.NServerSocket;
 import com.infra.runner.Commander;
 import com.infra.runner.Courier;
 import com.infra.runner.Cryptor;
@@ -38,7 +38,7 @@ public class JServer {
 		initView();// 第二:初始化基本界面
 		initWorker();// 第三:初始化子线程
 		initSpringContext();// 第四:初始化SpringContext
-		XServerSocket.singleton();// 第五:初始化服务器通信接口
+		new NServerSocket();// 第五:初始化服务器通信接口
 	}
 
 	private void initView() {
@@ -52,8 +52,11 @@ public class JServer {
 		frame.setVisible(true);
 	}
 
+	@SuppressWarnings("unused")
 	private Cryptor cryptWorker;
+	@SuppressWarnings("unused")
 	private Commander commander;
+	@SuppressWarnings("unused")
 	private Courier courier;
 
 	private void initWorker() {

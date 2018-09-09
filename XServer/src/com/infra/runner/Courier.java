@@ -61,18 +61,18 @@ public class Courier {
 		public void run() {
 			try {
 				DestinationData data;
-				NSocket session;
+				NSocket nSocket;
 				while (runMark) {
 					synchronized (LOCK) {
 						data = dataQueue.poll();
 						if (data == null) {
 							LOCK.wait();
 						} else {
-							session = SessionContext.getSessionBySocketId(data.socketId);
+							nSocket = SessionContext.getSessionBySocketId(data.socketId);
 							// System.out.println("ou:" +
 							// Hex.fromArray(data.msgByes));
-							if (session != null) {
-								session.writeDataPack(data.msgByes);
+							if (nSocket != null) {
+								nSocket.writeDataPack(data.msgByes);
 							}
 						}
 					}

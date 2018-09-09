@@ -9,22 +9,19 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.core.App;
 import com.core.Console;
-import com.core.Dispatcher;
-import com.core.util.XUtil;
 import com.infra.Config;
-import com.infra.event.EventType;
+import com.infra.event.ModuleEvent;
 
 /**
  * @author xYzDl
  * @date 2018年9月8日 下午7:56:38
- * @description 处理网络IO的反应器
+ * @description 服务器Socket
  */
-public class Reactor {
+public class NServerSocket {
 
-	public Dispatcher dispatcher;
-
-	public Reactor() {
+	public NServerSocket() {
 		try {
 			// 创建通道和选择器
 			ServerSocketChannel channel = ServerSocketChannel.open();
@@ -54,7 +51,9 @@ public class Reactor {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			dispatcher.dispatch(EventType.CLOSE, "Server Launch Failed!");
+			App.dispatch(ModuleEvent.SERVER_SOCKET_CLOSE, "Server Launch Failed!");
+			// SessionContext.deleteSession(SessionContext.getSessionBySocketId(xEvent.data.toString()));
+			// App.dispatch(ModuleEvent.SOCKET_CLOSE, xEvent.data.toString());
 		}
 	}
 
@@ -73,8 +72,6 @@ public class Reactor {
 						if (readyKey.isReadable()) {// 读数据
 							clientChannel = (SocketChannel) readyKey.channel();
 							nSocket.readChannel();
-							if (nSocket.bytesAvailable() > 0)
-								dispatcher.dispatch(EventType.SOCKET_DATA, XUtil.getSocketId(clientChannel.socket()));
 						}
 						if (readyKey.isWritable()) {// 写数据
 							nSocket.flush();
@@ -111,17 +108,15 @@ public class Reactor {
 					selectionKey = it.next();
 					it.remove();
 					if (selectionKey.isAcceptable()) {
-						System.out.println(selectionKey.attachment() + " - 接受请求事件");
 						serverSocketChannel = (ServerSocketChannel) selectionKey.channel();
 						socketChannel = serverSocketChannel.accept();
-						NSocket xSession = SessionContext.createSession(socketChannel);
-						socketChannel.configureBlocking(false).register(subSelector, SelectionKey.OP_READ | SelectionKey.OP_WRITE).attach(xSession);
+						NSocket nSocket = SessionContext.createSession(socketChannel);
+						socketChannel.configureBlocking(false).register(subSelector, SelectionKey.OP_READ | SelectionKey.OP_WRITE).attach(nSocket);
 
-						dispatcher.dispatch(EventType.CONNECT, xSession);
-						System.out.println(selectionKey.attachment() + " - 已连接");
+						nSocket.sendVersion();
+						Console.addMsg("Start to Verify...");
 					}
 					if (selectionKey.isConnectable()) {
-						System.out.println(selectionKey.attachment() + " - 连接事件");
 					}
 				}
 			}
