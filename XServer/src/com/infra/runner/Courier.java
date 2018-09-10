@@ -8,7 +8,6 @@ import com.core.App;
 import com.core.event.XEvent;
 import com.infra.DestinationData;
 import com.infra.event.ModuleEvent;
-import com.infra.net.SessionContext;
 import com.infra.net.NSocket;
 
 /**
@@ -68,7 +67,7 @@ public class Courier {
 						if (data == null) {
 							LOCK.wait();
 						} else {
-							nSocket = SessionContext.getSessionBySocketId(data.socketId);
+							nSocket = NSocket.getSocket(data.socketId);
 							// System.out.println("ou:" +
 							// Hex.fromArray(data.msgByes));
 							if (nSocket != null) {

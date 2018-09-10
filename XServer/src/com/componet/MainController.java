@@ -9,7 +9,7 @@ import com.core.XTimer;
 import com.core.event.XEvent;
 import com.infra.Config;
 import com.infra.event.ModuleEvent;
-import com.infra.net.SessionContext;
+import com.infra.net.NSocket;
 import com.message.Main.S_SynHeartbeat;
 
 /**
@@ -31,7 +31,7 @@ public class MainController {
 
 	private void onSocketClose(XEvent event) {
 		Console.addMsg("Socket Closed@" + event.data.toString());
-		Console.addMsg("The Left Client Num is " + SessionContext.numSession());
+		Console.addMsg("The Left Client Num is " + NSocket.numSocket);
 	}
 
 	@Autowired

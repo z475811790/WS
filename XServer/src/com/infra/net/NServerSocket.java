@@ -110,7 +110,7 @@ public class NServerSocket {
 					if (selectionKey.isAcceptable()) {
 						serverSocketChannel = (ServerSocketChannel) selectionKey.channel();
 						socketChannel = serverSocketChannel.accept();
-						NSocket nSocket = SessionContext.createSession(socketChannel);
+						NSocket nSocket = NSocket.create(socketChannel);
 						socketChannel.configureBlocking(false).register(subSelector, SelectionKey.OP_READ | SelectionKey.OP_WRITE).attach(nSocket);
 
 						nSocket.sendVersion();

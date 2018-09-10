@@ -3,12 +3,19 @@ package com.infra.net;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.core.App;
 import com.core.ByteArray;
 import com.core.Console;
+import com.core.XTimer;
+import com.core.event.IEventHandler;
 import com.core.event.XEvent;
 import com.core.interfaces.IFunctionNoneArgs;
 import com.core.util.XUtil;
@@ -47,19 +54,64 @@ public class NSocket {
 		_socketChannel = socketChannel;
 	}
 
+	// 静态区
+	private static Map<String, NSocket> _socketMap = new HashMap<>();
+	public static int numSocket = 0;
+
+	synchronized public static NSocket create(SocketChannel socketChannel) {
+		NSocket s = new NSocket(socketChannel);
+		_socketMap.put(XUtil.getSocketId(socketChannel.socket()), s);
+		numSocket++;
+		return s;
+	}
+
+	synchronized public static void delete(NSocket nSocket) {
+		if (nSocket == null)
+			return;
+		String key = nSocket.getSocketId();// XCommonUtil.getSocketIdX();
+		if (_socketMap.get(key) != null) {
+			nSocket.dispose();
+			_socketMap.remove(key);
+			numSocket--;
+		}
+	}
+
+	public static NSocket getSocket(String socketId) {
+		return _socketMap.get(socketId);
+	}
+
+	//
+
 	// ------START-事件注册区
 	static {
 		App.addModuleListener(ModuleEvent.CREATE_AES_COMPLETE, NSocket::onCreateAESComplete);
+		XTimer.add(new IEventHandler() {
+			// 定时查看Socket连接是否断开，指定时间间隔内如果没有数据传入说明已经断开
+			@Override
+			public void execute(XEvent xEvent) throws Exception {
+				List<NSocket> list = new ArrayList<>();
+				long now = System.currentTimeMillis();
+				for (NSocket e : _socketMap.values()) {
+					if (now - e.lastRecordTime > Config.SESSION_CHECK_INTERVAL)
+						list.add(e);
+				}
+				for (NSocket e : list) {
+					String id = e.toString();
+					delete(e);
+					App.dispatch(ModuleEvent.SOCKET_CLOSE, id);
+				}
+			}
+		}, Config.SESSION_CHECK_INTERVAL);
 	}
 
 	private static void onCreateAESComplete(XEvent xEvent) {
 		Stringbytes args = (Stringbytes) xEvent.data;
-		NSocket nSocket = SessionContext.getSessionBySocketId(args.string);
+		NSocket nSocket = getSocket(args.string);
 		if (nSocket == null)
 			return;
 		nSocket.writeDataPack(args.bs);
 		nSocket._currState = NORMAL;
-		App.dispatch(ModuleEvent.SOCKET_STATE_TO_NORMAL, SessionContext.numSession());
+		App.dispatch(ModuleEvent.SOCKET_STATE_TO_NORMAL, NSocket.numSocket);
 	}
 
 	// ------END---事件注册区
@@ -156,7 +208,7 @@ public class NSocket {
 		int ver = readInt();
 		if (ver > Config.COMMUNICATION_PROTOCOL_VERSION) {
 			Console.addMsg(getSocketId() + "-" + "Client Version is " + ver + ". Newer than Server's.");
-			SessionContext.deleteSession(this);
+			delete(this);
 			return;
 		}
 		outQueue.offer(XUtil.intToBytes(Config.challenge));
@@ -174,11 +226,12 @@ public class NSocket {
 		// 验证码算法
 		if (challenge != Config.challenge * 2) {
 			Console.addMsg(getSocketId() + "-" + "Client Challenge is Wrong " + challenge + " Socket will be Closed.");
-			SessionContext.deleteSession(this);
+			delete(this);
 			return;
 		}
 		Console.addMsg("State Change to RECEIVE_PUB_KEY");
-		App.dispatch(ModuleEvent.SERVER_WORKER_CRYPT_CREAT_AES, new Stringbytes(getSocketId(), byteArray.getAvailableBytes()));
+		App.dispatch(ModuleEvent.SERVER_WORKER_CRYPT_CREAT_AES,
+				new Stringbytes(getSocketId(), byteArray.getAvailableBytes()));
 	}
 
 	private void readMsg() {
