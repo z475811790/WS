@@ -48,29 +48,26 @@ public class NServerSocket {
 			}, "Reactor-Main");
 			t.setDaemon(true);
 			t.start();
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			App.dispatch(ModuleEvent.SERVER_SOCKET_CLOSE, "Server Launch Failed!");
-			// SessionContext.deleteSession(SessionContext.getSessionBySocketId(xEvent.data.toString()));
-			// App.dispatch(ModuleEvent.SOCKET_CLOSE, xEvent.data.toString());
 		}
 	}
 
 	private void subListener(Selector selector) {
 		while (true) {
 			SocketChannel clientChannel = null;
+			SelectionKey readyKey = null;
 			try {
 				int readyChannels = selector.selectNow();
 				if (readyChannels > 0) {
 					Set<SelectionKey> readyKeys = selector.selectedKeys();
 					Iterator<SelectionKey> iterator = readyKeys.iterator();
 					while (iterator.hasNext()) {
-						SelectionKey readyKey = iterator.next();
+						readyKey = iterator.next();
 						iterator.remove();
 						NSocket nSocket = (NSocket) readyKey.attachment();
 						if (readyKey.isReadable()) {// 读数据
-							clientChannel = (SocketChannel) readyKey.channel();
 							nSocket.readChannel();
 						}
 						if (readyKey.isWritable()) {// 写数据
@@ -80,12 +77,15 @@ public class NServerSocket {
 				}
 				Thread.sleep(50);
 			} catch (Exception e) {
+//				selector.keys().
+				NSocket.delete((NSocket) readyKey.attachment());
+				clientChannel = (SocketChannel) readyKey.channel();
 				try {
 					clientChannel.close();
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
-				e.printStackTrace();
+
 			}
 		}
 	}
@@ -98,7 +98,7 @@ public class NServerSocket {
 			ServerSocketChannel serverSocketChannel;
 			SocketChannel socketChannel;
 			while (true) {
-				Thread.sleep(1 * 200);
+				Thread.sleep(1 * 50);
 				mainSelector.select(); // 阻塞 直到有就绪事件为止
 				readySelectionKey = mainSelector.selectedKeys();
 				it = readySelectionKey.iterator();
@@ -112,16 +112,15 @@ public class NServerSocket {
 						socketChannel = serverSocketChannel.accept();
 						NSocket nSocket = NSocket.create(socketChannel);
 						socketChannel.configureBlocking(false).register(subSelector, SelectionKey.OP_READ | SelectionKey.OP_WRITE).attach(nSocket);
-
 						nSocket.sendVersion();
 						Console.addMsg("Start to Verify...");
 					}
-					if (selectionKey.isConnectable()) {
-					}
+					// if (selectionKey.isConnectable()) {
+					// }
 				}
 			}
 		} catch (Exception e) {
-			System.out.println("Error - " + e.getMessage());
+			System.err.println("Fatal Error!");
 			e.printStackTrace();
 		}
 	}

@@ -85,23 +85,6 @@ public class NSocket {
 	// ------START-事件注册区
 	static {
 		App.addModuleListener(ModuleEvent.CREATE_AES_COMPLETE, NSocket::onCreateAESComplete);
-		XTimer.add(new IEventHandler() {
-			// 定时查看Socket连接是否断开，指定时间间隔内如果没有数据传入说明已经断开
-			@Override
-			public void execute(XEvent xEvent) throws Exception {
-				List<NSocket> list = new ArrayList<>();
-				long now = System.currentTimeMillis();
-				for (NSocket e : _socketMap.values()) {
-					if (now - e.lastRecordTime > Config.SESSION_CHECK_INTERVAL)
-						list.add(e);
-				}
-				for (NSocket e : list) {
-					String id = e.toString();
-					delete(e);
-					App.dispatch(ModuleEvent.SOCKET_CLOSE, id);
-				}
-			}
-		}, Config.SESSION_CHECK_INTERVAL);
 	}
 
 	private static void onCreateAESComplete(XEvent xEvent) {
@@ -230,8 +213,7 @@ public class NSocket {
 			return;
 		}
 		Console.addMsg("State Change to RECEIVE_PUB_KEY");
-		App.dispatch(ModuleEvent.SERVER_WORKER_CRYPT_CREAT_AES,
-				new Stringbytes(getSocketId(), byteArray.getAvailableBytes()));
+		App.dispatch(ModuleEvent.SERVER_WORKER_CRYPT_CREAT_AES, new Stringbytes(getSocketId(), byteArray.getAvailableBytes()));
 	}
 
 	private void readMsg() {
