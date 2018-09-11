@@ -30,6 +30,8 @@ import com.message.Message.MessageEnum.MessageId;
  */
 public class CSocket {
 	public static final int HEAD_LEN = 4; // 数据包头,用来表示实际数据的长度,数据包去掉包头才是实际数据长度
+	public static final int BODY_MAX_LEN = 8192; // 8192
+													// 数据包体，最大长度8k，超出认为是异常包，断开链接
 
 	private static final int DETERMINE_VERSION = 0; // 协议版本验证状态
 	private static final int RECEIVE_CHALLENGE = 1; // 接收验证码状态
@@ -98,12 +100,14 @@ public class CSocket {
 	// ------START-事件注册区
 	// ------END---事件注册区
 	// ------START-公共方法区
-	public void sendProtoMessage(Message msg) {
-		ByteArray transitBytes = new ByteArray(msg.getSerializedSize() + HEAD_LEN);// 消息字节长度加消息id的总长度
+	private ByteArray transitBytes = new ByteArray(HEAD_LEN + BODY_MAX_LEN);
+
+	synchronized public void sendProtoMessage(Message msg) {
 		try {
+			transitBytes.clear();
 			transitBytes.putInt(MessageId.valueOf(msg.getClass().getSimpleName()).getNumber());
 			transitBytes.putBytes(msg.toByteArray());
-			if (transitBytes == null || transitBytes.length() == 0 || _currState != NORMAL)
+			if (_currState != NORMAL)
 				return;
 			byte[] bs = transitBytes.getAvailableBytes();
 			// System.out.println(Hex.fromArray(bs));

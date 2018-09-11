@@ -35,7 +35,7 @@ public class NSocket {
 	private ByteBuffer _innerBuffer = ByteBuffer.allocate(HEAD_LEN + BODY_MAX_LEN);
 	private int _readIndex = 0;
 	private int _length = 0;
-	private BlockingQueue<byte[]> outQueue = new LinkedBlockingQueue<>();
+	private BlockingQueue<byte[]> _outQueue = new LinkedBlockingQueue<>();
 	private IFunctionNoneArgs[] _stateHandlers = new IFunctionNoneArgs[3];// 状态处理方法字典
 	private int _currState = 0;
 
@@ -96,7 +96,7 @@ public class NSocket {
 	// ------START-公共方法区
 	public void sendVersion() {
 		// 验证协议版本
-		outQueue.offer(XUtil.intToBytes(Config.COMMUNICATION_PROTOCOL_VERSION));
+		_outQueue.offer(XUtil.intToBytes(Config.COMMUNICATION_PROTOCOL_VERSION));
 		Console.addMsg("sendVersion");
 	}
 
@@ -126,8 +126,8 @@ public class NSocket {
 			return;
 		}
 		if (_socketChannel.isConnected()) {
-			outQueue.offer(XUtil.intToBytes(bs.length));
-			outQueue.offer(bs);
+			_outQueue.offer(XUtil.intToBytes(bs.length));
+			_outQueue.offer(bs);
 		} else {
 			System.out.println("Socket is Disconnected");
 		}
@@ -136,7 +136,7 @@ public class NSocket {
 	private ByteBuffer outBytes = ByteBuffer.allocate(HEAD_LEN + BODY_MAX_LEN);
 
 	public void flush() throws IOException {
-		byte[] bytes = outQueue.poll();
+		byte[] bytes = _outQueue.poll();
 		if (bytes == null)
 			return;
 		outBytes.clear();
@@ -155,8 +155,8 @@ public class NSocket {
 		}
 		_innerBuffer = null;
 		outBytes = null;
-		outQueue.clear();
-		outQueue = null;
+		_outQueue.clear();
+		_outQueue = null;
 	}
 
 	/*
@@ -186,7 +186,7 @@ public class NSocket {
 			delete(this);
 			return;
 		}
-		outQueue.offer(XUtil.intToBytes(Config.challenge));
+		_outQueue.offer(XUtil.intToBytes(Config.challenge));
 		_currState = RECEIVE_CHALLENGE;
 
 		Console.addMsg("sendChallenge");
@@ -205,8 +205,7 @@ public class NSocket {
 			return;
 		}
 		Console.addMsg("State Change to RECEIVE_PUB_KEY");
-		App.dispatch(ModuleEvent.SERVER_WORKER_CRYPT_CREAT_AES,
-				new Stringbytes(getSocketId(), byteArray.getAvailableBytes()));
+		App.dispatch(ModuleEvent.SERVER_WORKER_CRYPT_CREAT_AES, new Stringbytes(getSocketId(), byteArray.getAvailableBytes()));
 	}
 
 	private void readMsg() {

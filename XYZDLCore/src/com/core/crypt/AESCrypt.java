@@ -83,24 +83,25 @@ public class AESCrypt {
 		int needNum = (BLOLEN - bs.length % BLOLEN) % BLOLEN;// 长度小于16字节的块填充到16字节的需要量
 		boolean mark = needNum == 0; // 是否是块大小的整数倍
 		int realLen = mark ? round * BLOLEN + 1 : round * BLOLEN;
-		
-		ByteArray byteArray = _enByteArrayMap.get(realLen);
-		if(byteArray==null)
-			byteArray 
-		byteArray.putBytes(bs);
-		for (int i = 0; i < needNum; i++) {
-			byteArray.putByte((byte) needNum);
-		}
-		try {
-			for (int i = 0; i < round; i++) {
-				encryptBlock(byteArray, i);
+
+		ByteArray byteArray = getByteArray(realLen, _enByteArrayMap);// _enByteArrayMap.get(realLen);
+		synchronized (byteArray) {
+			byteArray.putBytes(bs);
+			for (int i = 0; i < needNum; i++) {
+				byteArray.putByte((byte) needNum);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+			try {
+				for (int i = 0; i < round; i++) {
+					encryptBlock(byteArray, i);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			if (mark)
+				byteArray.putByte((byte) 0xff);
+			bs = byteArray.getAvailableBytes();
 		}
-		if (mark)
-			byteArray.putByte((byte) 0xff);
-		return byteArray.getAvailableBytes();
+		return bs;
 	}
 
 	/**
@@ -127,25 +128,25 @@ public class AESCrypt {
 		int round = (bs.length - 2) / BLOLEN + 1;
 		int i = 0;
 		try {
-			ByteArray decryptedBytes;
-			if (bs.length % BLOLEN != 0) {
-				decryptedBytes = new ByteArray(round * BLOLEN);
-				decryptedBytes.putBytes(bs, round * BLOLEN);
-				for (i = 0; i < round; i++) {
-					decryptBlock(decryptedBytes, i);
+			ByteArray decryptedBytes = getByteArray(round * BLOLEN, _deByteArrayMap);
+			synchronized (decryptedBytes) {
+				if (bs.length % BLOLEN != 0) {
+					decryptedBytes.putBytes(bs, round * BLOLEN);
+					for (i = 0; i < round; i++) {
+						decryptBlock(decryptedBytes, i);
+					}
+					bs = decryptedBytes.getAvailableBytes();
+				} else {
+					decryptedBytes.putBytes(bs);
+					for (i = 0; i < round; i++) {
+						decryptBlock(decryptedBytes, i);
+					}
+					decryptedBytes.position(decryptedBytes.length() - 1);
+					int needNum = decryptedBytes.getByte();
+					bs = decryptedBytes.getBytes(round * BLOLEN - needNum);
 				}
-				return decryptedBytes.getAvailableBytes();
-			} else {
-				ByteArray byteArray = new ByteArray(round * BLOLEN);
-				byteArray.putBytes(bs);
-				for (i = 0; i < round; i++) {
-					decryptBlock(byteArray, i);
-				}
-
-				byteArray.position(byteArray.length() - 1);
-				int needNum = byteArray.getByte();
-				return byteArray.getBytes(round * BLOLEN - needNum);
 			}
+			return bs;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -162,5 +163,15 @@ public class AESCrypt {
 		block = decrypt(block);
 		bytes.position(blockIndex * BLOLEN);
 		bytes.putBytes(block);
+	}
+
+	private ByteArray getByteArray(int length, Map<Integer, ByteArray> map) {
+		ByteArray array = map.get(length);
+		if (array == null) {
+			array = new ByteArray(length);
+			map.put(length, array);
+		}
+		array.clear();
+		return array;
 	}
 }
