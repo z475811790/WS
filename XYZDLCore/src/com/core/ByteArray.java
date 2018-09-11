@@ -242,7 +242,7 @@ public class ByteArray implements Iterable<Byte> {
 	 * 清空数据
 	 */
 	public void clear() {
-		_buffer = ByteBuffer.allocate(DEFAULT_LENGTH);
+		position(0);//ByteBuffer.allocate(DEFAULT_LENGTH);
 		_length = 0;
 	}
 

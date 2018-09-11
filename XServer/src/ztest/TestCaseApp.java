@@ -16,6 +16,7 @@ public class TestCaseApp {
 		
 		
 		dispatcher.dispatch("x", null);
+		
 	}
 
 	public void eve(XEvent xEvent) {

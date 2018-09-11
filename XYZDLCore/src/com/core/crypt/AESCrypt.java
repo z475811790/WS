@@ -1,5 +1,7 @@
 package com.core.crypt;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import javax.crypto.Cipher;
@@ -43,8 +45,9 @@ public class AESCrypt {
 	 */
 	public void generateRandomKey() {
 		Random random = new Random();
-		byte[] keybs = Hex.toArray("940600e35a3393eac3aa731090d49764").getAvailableBytes();//new byte[16];//
-//		random.nextBytes(keybs);
+		byte[] keybs = Hex.toArray("940600e35a3393eac3aa731090d49764").getAvailableBytes();// new
+																							// byte[16];//
+		// random.nextBytes(keybs);
 		_secretKey = new SecretKeySpec(keybs, "AES");
 		genCipher();
 	}
@@ -68,6 +71,8 @@ public class AESCrypt {
 		return _deCipher.doFinal(bs);
 	}
 
+	private Map<Integer, ByteArray> _enByteArrayMap = new HashMap<>();// 加密时专用
+
 	/**
 	 * 输入的bytes长度一定要大于0，否则加密就没有意义
 	 */
@@ -77,7 +82,11 @@ public class AESCrypt {
 		int round = (bs.length - 1) / BLOLEN + 1;
 		int needNum = (BLOLEN - bs.length % BLOLEN) % BLOLEN;// 长度小于16字节的块填充到16字节的需要量
 		boolean mark = needNum == 0; // 是否是块大小的整数倍
-		ByteArray byteArray = new ByteArray(mark ? round * BLOLEN + 1 : round * BLOLEN);
+		int realLen = mark ? round * BLOLEN + 1 : round * BLOLEN;
+		
+		ByteArray byteArray = _enByteArrayMap.get(realLen);
+		if(byteArray==null)
+			byteArray 
 		byteArray.putBytes(bs);
 		for (int i = 0; i < needNum; i++) {
 			byteArray.putByte((byte) needNum);
@@ -106,6 +115,8 @@ public class AESCrypt {
 		bytes.position(blockIndex * BLOLEN);
 		bytes.putBytes(block);
 	}
+
+	private Map<Integer, ByteArray> _deByteArrayMap = new HashMap<>();// 解密时专用
 
 	/**
 	 * 解密,返回一组新数据

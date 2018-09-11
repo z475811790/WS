@@ -56,7 +56,6 @@ public class NServerSocket {
 
 	private void subListener(Selector selector) {
 		while (true) {
-			SocketChannel clientChannel = null;
 			SelectionKey readyKey = null;
 			try {
 				int readyChannels = selector.selectNow();
@@ -77,11 +76,9 @@ public class NServerSocket {
 				}
 				Thread.sleep(50);
 			} catch (Exception e) {
-//				selector.keys().
 				NSocket.delete((NSocket) readyKey.attachment());
-				clientChannel = (SocketChannel) readyKey.channel();
 				try {
-					clientChannel.close();
+					readyKey.channel().close();
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}

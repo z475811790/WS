@@ -3,19 +3,14 @@ package com.infra.net;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.core.App;
 import com.core.ByteArray;
 import com.core.Console;
-import com.core.XTimer;
-import com.core.event.IEventHandler;
 import com.core.event.XEvent;
 import com.core.interfaces.IFunctionNoneArgs;
 import com.core.util.XUtil;
@@ -46,7 +41,7 @@ public class NSocket {
 
 	public long lastRecordTime = 0;// 上一次接收消息数据的时间戳
 
-	public NSocket(SocketChannel socketChannel) {
+	private NSocket(SocketChannel socketChannel) {
 		_stateHandlers[SEND_CHALLENGE] = this::sendChallenge;
 		_stateHandlers[RECEIVE_CHALLENGE] = this::receiveChallengeAndPublicKey;
 		_stateHandlers[NORMAL] = this::readMsg;
@@ -114,9 +109,6 @@ public class NSocket {
 		} else {
 			_length += len;
 		}
-		// if(len>0){
-		// System.out.println("len:"+len);
-		// }
 		if (_innerBuffer.remaining() == 0 && _readIndex > 0) {// 缓冲区填充满了且有数据已经被读取了
 			_length -= _readIndex;
 			_innerBuffer.position(_readIndex);
@@ -213,7 +205,8 @@ public class NSocket {
 			return;
 		}
 		Console.addMsg("State Change to RECEIVE_PUB_KEY");
-		App.dispatch(ModuleEvent.SERVER_WORKER_CRYPT_CREAT_AES, new Stringbytes(getSocketId(), byteArray.getAvailableBytes()));
+		App.dispatch(ModuleEvent.SERVER_WORKER_CRYPT_CREAT_AES,
+				new Stringbytes(getSocketId(), byteArray.getAvailableBytes()));
 	}
 
 	private void readMsg() {
