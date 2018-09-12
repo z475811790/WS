@@ -11,9 +11,9 @@ public interface StudentService {
 
 	public Student selectById(int id);
 
-	public int insert(Student entity);
+	public Student insert(Student entity);
 
-	public int update(Student entity);
+	public Student update(Student entity);
 
 	public int deleteById(int id);
 

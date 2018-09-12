@@ -1,6 +1,10 @@
-<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd" updateCheck="false" monitoring="autodetect" dynamicConfig="true">
-	<diskStore path="G:\ehcache" />
-	<defaultCache maxElementsInMemory="1000" maxElementsOnDisk="10000000" eternal="false" overflowToDisk="false" timeToIdleSeconds="120" timeToLiveSeconds="120"
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd"
+	updateCheck="false" monitoring="autodetect" dynamicConfig="true">
+	<diskStore path="java.io.tmpdir" />
+	<defaultCache maxElementsInMemory="1000"
+		maxElementsOnDisk="10000000" eternal="false" overflowToDisk="false"
+		timeToIdleSeconds="120" timeToLiveSeconds="120"
 		diskExpiryThreadIntervalSeconds="120" memoryStoreEvictionPolicy="LRU">
 	</defaultCache>
 	<!-- 属性说明： -->
@@ -18,5 +22,7 @@
 	<!--  diskPersistent - 在VM重启的时候是否启用磁盘保存EhCache中的数据，默认是false。 -->
 	<!--  diskExpiryThreadIntervalSeconds - 磁盘缓存的清理线程运行间隔，默认是120秒。每个120s，相应的线程会进行一次EhCache中数据的清理工作 -->
 	<!--  memoryStoreEvictionPolicy - 当内存缓存达到最大，有新的element加入的时候， 移除缓存中element的策略。默认是LRU（最近最少使用），可选的有LFU（最不常使用）和FIFO（先进先出） -->
-	<cache name="UserCache" maxElementsInMemory="1000" eternal="false" timeToIdleSeconds="1800" timeToLiveSeconds="1800" overflowToDisk="false" memoryStoreEvictionPolicy="LRU" />
+	<cache name="UserCache" maxElementsInMemory="1000" eternal="false"
+		timeToIdleSeconds="1800" timeToLiveSeconds="1800" overflowToDisk="false"
+		memoryStoreEvictionPolicy="LRU" />
 </ehcache>

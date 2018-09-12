@@ -1,11 +1,17 @@
 package com.service.impl;
 
 import java.util.*;
+
+import org.apache.ibatis.session.ExecutorType;
+import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+
+import com.componet.BaseService;
 import com.entity.*;
 import com.service.*;
 //自定义部分在代码自动生成时不会被覆盖
@@ -14,26 +20,33 @@ import com.service.*;
 
 @SuppressWarnings("unused")
 @Service
-public class StudentServiceImpl implements StudentService {
-	private static final String DAO = "com.dao.IStudentDao.";
+public class StudentServiceImpl extends BaseService implements StudentService {
 
-	@Autowired
-	private SqlSessionTemplate sqlSessionTemplate;
+	private static String DAO = "com.dao.IStudentDao.";
 
-	@Cacheable(value = "UserCache", key = "#id")
+	@Override
+	public String getDAO() {
+		return DAO;
+	}
+
+	@Cacheable(value = "UserCache", key = "'Entity-Student-'+#id")
 	@Override
 	public Student selectById(int id) {
 		return sqlSessionTemplate.selectOne(DAO + "selectById", id);
 	}
 
+	@CachePut(value = "UserCache", key = "'Entity-Student-'+#id")
 	@Override
-	public int insert(Student entity) {
-		return sqlSessionTemplate.insert(DAO + "insert", entity);
+	public Student insert(Student entity) {
+		_insertSet.add(entity);
+		return entity;
 	}
 
+	@Cacheable(value = "UserCache", key = "'Entity-Student-'+#id")
 	@Override
-	public int update(Student entity) {
-		return sqlSessionTemplate.update(DAO + "update", entity);
+	public Student update(Student entity) {
+		sqlSessionTemplate.update(DAO + "update", entity);
+		return entity;
 	}
 
 	@Override
@@ -45,10 +58,20 @@ public class StudentServiceImpl implements StudentService {
 
 	@Override
 	public void testMethod() {
+		// SqlSession session =
+		// sqlSessionTemplate.getSqlSessionFactory().openSession(ExecutorType.BATCH,
+		// false);
+		// Student s = selectById(1);
+		// for (int i = 0; i < 3; i++) {
+		// session.insert(DAO + "insert", s);
+		// }
+		// session.commit();
+
 		Student s = selectById(1);
-		// Student s1 = selectById(1);
-		// int id = insert(s);
-		// deleteById(id);
+		_insertSet.add(s);
+		s = selectById(2);
+		_insertSet.add(s);
+		synBatchInsert();
 	}
 
 	@Override
