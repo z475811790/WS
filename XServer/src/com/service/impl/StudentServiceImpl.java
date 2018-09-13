@@ -38,7 +38,8 @@ public class StudentServiceImpl extends BaseService implements StudentService {
 	@CachePut(value = "UserCache", key = "'Entity-Student-'+#id")
 	@Override
 	public Student insert(Student entity) {
-		_insertSet.add(entity);
+//		_insertSet.add(entity);
+		sqlSessionTemplate.insert(DAO + "insert", entity);
 		return entity;
 	}
 
@@ -68,10 +69,14 @@ public class StudentServiceImpl extends BaseService implements StudentService {
 		// session.commit();
 
 		Student s = selectById(1);
-		_insertSet.add(s);
-		s = selectById(2);
-		_insertSet.add(s);
-		synBatchInsert();
+		
+		s.setId(null);
+		insert(s);
+		System.out.println(s.getId());
+//		_insertSet.add(s);
+//		s = selectById(2);
+//		_insertSet.add(s);
+//		synBatchInsert();
 	}
 
 	@Override

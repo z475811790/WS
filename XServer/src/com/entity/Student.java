@@ -15,7 +15,7 @@ public class Student implements Serializable{
 	 */
 	private static final long serialVersionUID = 1534564827894800883L;
 	/** id编号 */
-	private int id;
+	private Integer id;
 	/** 名字 */
 	private String userName;
 	/** 性别 */
@@ -32,7 +32,7 @@ public class Student implements Serializable{
 	public Student() {
 	}
 
-	public Student(int id, String userName, String sex, int age, Date birthday, Map<String, String> pro, List<String> rewardInfo) {
+	public Student(Integer id, String userName, String sex, int age, Date birthday, Map<String, String> pro, List<String> rewardInfo) {
 		this.id = id;
 		this.userName = userName;
 		this.sex = sex;
@@ -42,11 +42,11 @@ public class Student implements Serializable{
 		this.rewardInfo = rewardInfo;
 	}
 
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
