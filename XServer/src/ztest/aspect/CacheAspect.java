@@ -3,10 +3,11 @@ package ztest.aspect;
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.expression.ExpressionParser;
@@ -14,7 +15,9 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
 
-import ztest.cache.MultiCache;
+import ztest.cache.CacheDelete;
+import ztest.cache.CacheGet;
+import ztest.cache.CacheSet;
 import ztest.service.CacheBean;
 
 @Component
@@ -24,40 +27,61 @@ public class CacheAspect {
 	@Autowired
 	public CacheBean cacheBean;
 
-	@Pointcut("@annotation(ztest.cache.MultiCache)")
-	public void cutPoint() {
-	}
-
-	// @Before("cutPoint()")
-	// public void beforeSaveServiceNode(JoinPoint joinPoint) {
-	// System.out.println(joinPoint);
+	// @Pointcut("@annotation(ztest.cache.CacheSet)")
+	// public void cutPoint() {
 	// }
 
-	private static ConcurrentHashMap<String, MultiCache> annoMap = new ConcurrentHashMap<String, MultiCache>();
+	private static ConcurrentHashMap<String, CacheSet> cacheSetMap = new ConcurrentHashMap<>();
+
+	// 声明rtv时指定的类型会限制目标方法必须返回指定类型的值或没有返回值
+	// 此处将rtv的类型声明为Object，意味着对目标方法的返回值不加限制
+	@AfterReturning(pointcut = "@annotation(ztest.cache.CacheSet)", returning = "rtv")
+	public void cacheSet(JoinPoint point, Object rtv) {
+		String signature = point.getSignature().toString();
+
+		CacheSet anno = cacheSetMap.get(signature);
+		if (anno == null) {
+			Method method = getMethod(point);
+			anno = method.getAnnotation(CacheSet.class);
+			cacheSetMap.put(signature, anno);
+		}
+
+		String cacheKey = null;
+		switch (anno.type()) {
+		case STR_VAL:
+			cacheKey = anno.preKey() + point.getArgs()[0].toString();
+			break;
+		case REF_ID:
+			cacheKey = anno.preKey() + parseEntity(point.getArgs()[0]);
+			break;
+		}
+		if (cacheKey == null)
+			return;
+		cacheBean.hset(anno.cache(), cacheKey, rtv);
+	}
+
+	private String parseEntity(Object object) {
+		if (object instanceof Book)
+			return ((Book) object).getId().toString();
+		return "";
+	}
+
+	private static ConcurrentHashMap<String, CacheGet> cacheGetMap = new ConcurrentHashMap<>();
 
 	/**
 	 * 定义缓存逻辑
 	 */
-	@Around("@annotation(ztest.cache.MultiCache)")
+	@Around("@annotation(ztest.cache.CacheGet)")
 	public Object cacheGet(ProceedingJoinPoint point) {
 		String signature = point.getSignature().toString();
 
-		MultiCache anno = annoMap.get(signature);
+		CacheGet anno = cacheGetMap.get(signature);
 		if (anno == null) {
 			Method method = getMethod(point);
-			anno = method.getAnnotation(MultiCache.class);
-			annoMap.put(signature, anno);
+			anno = method.getAnnotation(CacheGet.class);
+			cacheGetMap.put(signature, anno);
 		}
-
-		String cacheKey = null;
-		switch (anno.keyType()) {
-		case STR_VAL:
-			cacheKey = anno.key() + point.getArgs()[0];
-			break;
-		case REF_ID:
-			cacheKey = anno.key() + parseEntity(point.getArgs()[0]);
-			break;
-		}
+		String cacheKey = anno.preKey() + point.getArgs()[0].toString();
 		Object result = cacheBean.hget(anno.cache(), cacheKey);
 		if (result == null) {
 			try {
@@ -70,36 +94,46 @@ public class CacheAspect {
 		return result;
 	}
 
-	private String parseEntity(Object object) {
-		if (object == null)
-			return "";
-		if (object instanceof Book)
-			return ((Book) object).getId().toString();
-		return "";
-	}
-
 	/**
 	 * 获取被拦截方法对象
 	 * 
 	 * MethodSignature.getMethod() 获取的是顶层接口或者父类的方法对象 而缓存的注解在实现类的方法上
 	 * 所以应该使用反射获取当前对象的方法对象
 	 */
-	public Method getMethod(ProceedingJoinPoint pjp) {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private Method getMethod(JoinPoint point) {
 		// 获取参数的类型
-		Object[] args = pjp.getArgs();
-		Class[] argTypes = new Class[pjp.getArgs().length];
+		Object[] args = point.getArgs();
+		Class[] argTypes = new Class[point.getArgs().length];
 		for (int i = 0; i < args.length; i++) {
 			argTypes[i] = args[i].getClass();
 		}
 		Method method = null;
 		try {
-			Object target = pjp.getTarget();
+			Object target = point.getTarget();
 			Class klass = target.getClass();
-			method = klass.getMethod(pjp.getSignature().getName(), argTypes);
+			method = klass.getMethod(point.getSignature().getName(), argTypes);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return method;
+	}
+
+	private static ConcurrentHashMap<String, CacheDelete> cacheDeleteMap = new ConcurrentHashMap<>();
+
+	@AfterReturning(pointcut = "@annotation(ztest.cache.CacheDelete)")
+	public void cacheDelete(JoinPoint point) {
+		String signature = point.getSignature().toString();
+
+		CacheDelete anno = cacheDeleteMap.get(signature);
+		if (anno == null) {
+			Method method = getMethod(point);
+			anno = method.getAnnotation(CacheDelete.class);
+			cacheDeleteMap.put(signature, anno);
+		}
+
+		String cacheKey = anno.preKey() + point.getArgs()[0].toString();
+		cacheBean.hdel(anno.cache(), cacheKey);
 	}
 
 	/**

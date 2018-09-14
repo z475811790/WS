@@ -3,14 +3,15 @@ package ztest.service;
 import org.springframework.stereotype.Service;
 
 import ztest.aspect.Book;
-import ztest.cache.KeyType;
-import ztest.cache.MultiCache;
+import ztest.cache.CacheDelete;
+import ztest.cache.CacheGet;
+import ztest.cache.CacheSet;
+import ztest.cache.CacheSetType;
 
 @Service
 public class BookServiceImpl implements BookService {
 
-	// 使用hset的方式，getMerchantById用作key，fieldKey当做map中的key
-	@MultiCache(cache = "myCache", key = "entity", keyType = KeyType.STR_VAL)
+	@CacheGet(cache = "myCache", preKey = "entity")
 	public Book getMerchantById(Integer id) {
 		System.out.println("开始查询数据库");
 		Book book = new Book();
@@ -19,9 +20,21 @@ public class BookServiceImpl implements BookService {
 		return book;
 	}
 
-	@MultiCache(cache = "myCache", key = "entity", keyType = KeyType.REF_ID)
+	@CacheGet(cache = "myCache", preKey = "entity")
 	public Book getMerchantById(Book entity, Boolean isFull) {
 		System.out.println("开始查询数据库");
 		return entity;
+	}
+
+	@CacheSet(cache = "myCache", preKey = "entity", type = CacheSetType.REF_ID)
+	public Book insert(Book entity) {
+		System.out.println("开始插入数据库");
+		entity.setId(entity.getId() + 1);
+		return entity;
+	}
+
+	@CacheDelete(cache = "myCache", preKey = "entity")
+	public Integer delete(Integer id) {
+		return id;
 	}
 }

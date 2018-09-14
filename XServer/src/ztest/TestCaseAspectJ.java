@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import ztest.aspect.Book;
 import ztest.service.BookService;
 
 /**
@@ -22,6 +23,16 @@ public class TestCaseAspectJ {
 	@Test
 	public void studentServiceTest() {
 		service.getMerchantById(3);
+		service.getMerchantById(3);
+		Book book = new Book();
+		book.setId(5);
+		book.setName("b2");
+		service.insert(book);
+		service.insert(book);
+
+		service.delete(3);
+
+		book = service.getMerchantById(3);
 	}
 
 }

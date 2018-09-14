@@ -41,7 +41,7 @@ public class CacheBean {
 	/**
 	 * 从Hash中删除对象
 	 */
-	public void hdel(String key, String... field) {
+	public void hdel(String key, String field) {
 		map.remove(key + field);
 	}
 
