@@ -9,10 +9,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MultiCache {
 
+	String cache();
+
 	String key();
 
-	String fieldKey();
-
-	int expireTime() default 3600;
+	KeyType keyType();
 
 }

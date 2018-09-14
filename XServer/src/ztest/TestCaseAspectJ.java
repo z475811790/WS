@@ -21,8 +21,7 @@ public class TestCaseAspectJ {
 
 	@Test
 	public void studentServiceTest() {
-		service.getMerchantById("hello");
-		System.out.println(1);
+		service.getMerchantById(3);
 	}
 
 }

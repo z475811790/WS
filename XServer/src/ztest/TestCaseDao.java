@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.entity.Student;
 import com.service.StudentService;
 
 /**
@@ -19,7 +20,14 @@ public class TestCaseDao {
 	public StudentService studentService;
 
 	@Test
-	public void TestCase() {
-		studentService.testMethod();
+	public void TestCaseInsert() {
+//		studentService.testMethod();
+		
+		Student s = studentService.selectById(1);
+//		studentService.insert(s);
+//		s.setId(null);
+//		studentService.insert(s);
+		Student s1 = studentService.selectById(1);
+		System.out.println(s1.getId());
 	}
 }

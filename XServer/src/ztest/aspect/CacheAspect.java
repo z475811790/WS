@@ -1,11 +1,12 @@
 package ztest.aspect;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.reflect.MethodSignature;
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.expression.ExpressionParser;
@@ -23,43 +24,58 @@ public class CacheAspect {
 	@Autowired
 	public CacheBean cacheBean;
 
+	@Pointcut("@annotation(ztest.cache.MultiCache)")
+	public void cutPoint() {
+	}
+
+	// @Before("cutPoint()")
+	// public void beforeSaveServiceNode(JoinPoint joinPoint) {
+	// System.out.println(joinPoint);
+	// }
+
+	private static ConcurrentHashMap<String, MultiCache> annoMap = new ConcurrentHashMap<String, MultiCache>();
+
 	/**
 	 * 定义缓存逻辑
 	 */
 	@Around("@annotation(ztest.cache.MultiCache)")
-	public Object cache(ProceedingJoinPoint pjp) {
-		Object result = null;
-		Boolean cacheEnable = false;
-		// 判断是否开启缓存
-		if (!cacheEnable) {
-			try {
-				result = pjp.proceed();
-			} catch (Throwable e) {
-				e.printStackTrace();
-			}
-			return result;
+	public Object cacheGet(ProceedingJoinPoint point) {
+		String signature = point.getSignature().toString();
+
+		MultiCache anno = annoMap.get(signature);
+		if (anno == null) {
+			Method method = getMethod(point);
+			anno = method.getAnnotation(MultiCache.class);
+			annoMap.put(signature, anno);
 		}
 
-		Method method = getMethod(pjp);
-		MultiCache cacheable = method.getAnnotation(MultiCache.class);
-
-		String fieldKey = parseKey(cacheable.fieldKey(), method, pjp.getArgs());
-
-		// 获取方法的返回类型,让缓存可以返回正确的类型
-		Class returnType = ((MethodSignature) pjp.getSignature()).getReturnType();
-
-		// 使用redis 的hash进行存取，易于管理
-		result = cacheBean.hget(cacheable.key(), fieldKey, returnType);
-
+		String cacheKey = null;
+		switch (anno.keyType()) {
+		case STR_VAL:
+			cacheKey = anno.key() + point.getArgs()[0];
+			break;
+		case REF_ID:
+			cacheKey = anno.key() + parseEntity(point.getArgs()[0]);
+			break;
+		}
+		Object result = cacheBean.hget(anno.cache(), cacheKey);
 		if (result == null) {
 			try {
-				result = pjp.proceed();
-				cacheBean.hset(cacheable.key(), fieldKey, result);
+				result = point.proceed();
+				cacheBean.hset(anno.cache(), cacheKey, result);
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
 		}
 		return result;
+	}
+
+	private String parseEntity(Object object) {
+		if (object == null)
+			return "";
+		if (object instanceof Book)
+			return ((Book) object).getId().toString();
+		return "";
 	}
 
 	/**
@@ -77,14 +93,13 @@ public class CacheAspect {
 		}
 		Method method = null;
 		try {
-			method = pjp.getTarget().getClass().getMethod(pjp.getSignature().getName(), argTypes);
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
+			Object target = pjp.getTarget();
+			Class klass = target.getClass();
+			method = klass.getMethod(pjp.getSignature().getName(), argTypes);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return method;
-
 	}
 
 	/**
