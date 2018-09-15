@@ -11,6 +11,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.entity.Student;
 import com.service.StudentService;
 
+import net.sf.ehcache.CacheManager;
+
 /**
  * 配置spring和junit整合，junit启动时加载springIOC容器 spring-test,junit
  */
@@ -23,13 +25,6 @@ public class TestCaseEhcache {
 
 	@Test
 	public void TestCase() {
-		Student s = studentService.selectById(1);
-		s = studentService.selectById(1);
-		s.setId(25);
-		s.setAge(20);
-//		studentService.update(s);
-//		s = studentService.selectById(25);
-//		studentService.deleteById(25);
-//		s = studentService.selectById(25);
+		CacheManager cacheManager = CacheManager.create();
 	}
 }
