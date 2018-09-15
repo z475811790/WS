@@ -24,11 +24,12 @@ public class TestCaseEhcache {
 	@Test
 	public void TestCase() {
 		Student s = studentService.selectById(1);
+		s = studentService.selectById(1);
 		s.setId(25);
 		s.setAge(20);
-		studentService.update(s);
-		s = studentService.selectById(25);
-		studentService.deleteById(25);
-		s = studentService.selectById(25);
+//		studentService.update(s);
+//		s = studentService.selectById(25);
+//		studentService.deleteById(25);
+//		s = studentService.selectById(25);
 	}
 }

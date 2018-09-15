@@ -28,7 +28,6 @@ public class LoginActionImpl extends BaseAction implements LoginAction {
 		u.setAccount(c.getAccount());
 		u.setPassword("123");
 
-		studentService.testMethod();
 		System.out.println("xYz");
 		// User u = ServiceContext.singleton.loginService.login(c.account,
 		// c.password);

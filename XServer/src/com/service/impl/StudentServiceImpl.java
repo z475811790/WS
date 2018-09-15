@@ -2,13 +2,11 @@ package com.service.impl;
 
 import java.util.*;
 
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.componet.BaseService;
 import com.entity.*;
+import com.infra.cache.*;
 import com.service.*;
 //自定义部分在代码自动生成时不会被覆盖
 //S
@@ -25,13 +23,13 @@ public class StudentServiceImpl extends BaseService implements StudentService {
 		return DAO;
 	}
 
-	@Cacheable(value = "UserCache", key = "'Entity-' + #id")
+	@CacheGet(cache = "StudentCache")
 	@Override
-	public Student selectById(int id) {
+	public Student selectById(Integer id) {
 		return sqlSessionTemplate.selectOne(DAO + "selectById", id);
 	}
 
-	@CachePut(value = "UserCache", key = "'Entity-' + #entity.id")
+	@CacheSet(cache = "StudentCache", type = CacheSetType.REF_ID)
 	@Override
 	public Student insert(Student entity) {
 		if (_autoIncrementValue == -1) {
@@ -50,7 +48,7 @@ public class StudentServiceImpl extends BaseService implements StudentService {
 	 *            绝对不能是new出来的实例
 	 * @return
 	 */
-	@CachePut(value = "UserCache", key = "'Entity-' + #entity.id")
+	@CacheSet(cache = "StudentCache", type = CacheSetType.REF_ID)
 	@Override
 	public Student update(Student entity) {
 		_updateSet.add(entity);
@@ -58,29 +56,27 @@ public class StudentServiceImpl extends BaseService implements StudentService {
 	}
 
 	@Override
-	@CacheEvict(value = "UserCache", key = "'Entity-' + #id")
-	public int deleteById(int id) {
+	@CacheDelete(cache = "StudentCache")
+	public int deleteById(Integer id) {
 		return sqlSessionTemplate.update(DAO + "deleteById", id);
 	}
 
 	/**
-	 * 执行全表操作前需要强制同步缓存到数据库，尽量不要有全表操作
+	 * 执行全表操作前需要强制同步缓存到数据库，尽量不要有全表操作，即使有也要注意优化操作，注意要先插入数据再更新
+	 * 
+	 * @return 插入和更新总数
 	 */
-	public void flushCache() {
-		if (_insertSet.size() > 0)
+	public int flushCache() {
+		int numInsert = _insertSet.size();
+		int numUpdate = _updateSet.size();
+		if (numInsert > 0)
 			synBatchInsert();
-		if (_updateSet.size() > 0)
+		if (numUpdate > 0)
 			synBatchUpdate();
+		return numInsert + numUpdate;
 	}
 	// 自定义部分在代码自动生成时不会被覆盖
 	/* S */
-
-	@Override
-	public void testMethod() {
-		Student s = selectById(1);
-		s = selectById(1);
-		s.setAge(3);
-	}
 
 	@Override
 	public List<Student> selectByAgeRange(int age) {
