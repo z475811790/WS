@@ -9,10 +9,6 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
-import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
 
 import com.infra.cache.CacheDelete;
@@ -20,40 +16,17 @@ import com.infra.cache.CacheGet;
 import com.infra.cache.CacheSet;
 import com.util.EntityUtil;
 
+/**
+ * @author xYzDl
+ * @date 2018年9月15日 下午11:34:42
+ * @description 缓存切面
+ */
 @Component
 @Aspect
 public class CacheAspect {
 
 	@Autowired
-	private Cacher cacher;
-
-	// 根据函数签名存放对应的缓存注解
-	private static ConcurrentHashMap<String, CacheSet> cacheSetMap = new ConcurrentHashMap<>();
-
-	// 声明rtv时指定的类型会限制目标方法必须返回指定类型的值或没有返回值
-	// 此处将rtv的类型声明为Object，意味着对目标方法的返回值不加限制
-	@AfterReturning(pointcut = "@annotation(com.infra.cache.CacheSet)", returning = "rtv")
-	private void cacheSet(JoinPoint point, Object rtv) {
-		String signature = point.getSignature().toString();
-		CacheSet anno = cacheSetMap.get(signature);
-		if (anno == null) {
-			Method method = getMethod(point);
-			anno = method.getAnnotation(CacheSet.class);
-			cacheSetMap.put(signature, anno);
-		}
-		String cacheKey = null;
-		switch (anno.type()) {
-		case STR_VAL:
-			cacheKey = anno.preKey() + point.getArgs()[0].toString();
-			break;
-		case REF_ID:
-			cacheKey = anno.preKey() + EntityUtil.getId(point.getArgs()[0]);
-			break;
-		}
-		if (cacheKey == null)
-			return;
-		cacher.set(anno.cache(), cacheKey, rtv);
-	}
+	private EntityCacher cacher;
 
 	// 根据函数签名存放对应的缓存注解
 	private static ConcurrentHashMap<String, CacheGet> cacheGetMap = new ConcurrentHashMap<>();
@@ -108,6 +81,34 @@ public class CacheAspect {
 	}
 
 	// 根据函数签名存放对应的缓存注解
+	private static ConcurrentHashMap<String, CacheSet> cacheSetMap = new ConcurrentHashMap<>();
+
+	// 声明rtv时指定的类型会限制目标方法必须返回指定类型的值或没有返回值
+	// 此处将rtv的类型声明为Object，意味着对目标方法的返回值不加限制
+	@AfterReturning(pointcut = "@annotation(com.infra.cache.CacheSet)", returning = "rtv")
+	private void cacheSet(JoinPoint point, Object rtv) {
+		String signature = point.getSignature().toString();
+		CacheSet anno = cacheSetMap.get(signature);
+		if (anno == null) {
+			Method method = getMethod(point);
+			anno = method.getAnnotation(CacheSet.class);
+			cacheSetMap.put(signature, anno);
+		}
+		String cacheKey = null;
+		switch (anno.type()) {
+		case STR_VAL:
+			cacheKey = anno.preKey() + point.getArgs()[0].toString();
+			break;
+		case REF_ID:
+			cacheKey = anno.preKey() + EntityUtil.getId(point.getArgs()[0]);
+			break;
+		}
+		if (cacheKey == null)
+			return;
+		cacher.set(anno.cache(), cacheKey, rtv);
+	}
+
+	// 根据函数签名存放对应的缓存注解
 	private static ConcurrentHashMap<String, CacheDelete> cacheDeleteMap = new ConcurrentHashMap<>();
 
 	@AfterReturning(pointcut = "@annotation(com.infra.cache.CacheDelete)")
@@ -131,21 +132,21 @@ public class CacheAspect {
 	 * @param
 	 * @return
 	 */
-	@SuppressWarnings("unused")
-	private String parseKey(String key, Method method, Object[] args) {
+	// private String parseKey(String key, Method method, Object[] args) {
 
-		// 获取被拦截方法参数名列表(使用Spring支持类库)
-		LocalVariableTableParameterNameDiscoverer u = new LocalVariableTableParameterNameDiscoverer();
-		String[] paraNameArr = u.getParameterNames(method);
+	// 获取被拦截方法参数名列表(使用Spring支持类库)
+	// LocalVariableTableParameterNameDiscoverer u = new
+	// LocalVariableTableParameterNameDiscoverer();
+	// String[] paraNameArr = u.getParameterNames(method);
 
-		// 使用SPEL进行key的解析
-		ExpressionParser parser = new SpelExpressionParser();
-		// SPEL上下文
-		StandardEvaluationContext context = new StandardEvaluationContext();
-		// 把方法参数放入SPEL上下文中
-		for (int i = 0; i < paraNameArr.length; i++) {
-			context.setVariable(paraNameArr[i], args[i]);
-		}
-		return parser.parseExpression(key).getValue(context, String.class);
-	}
+	// 使用SPEL进行key的解析
+	// ExpressionParser parser = new SpelExpressionParser();
+	// SPEL上下文
+	// StandardEvaluationContext context = new StandardEvaluationContext();
+	// 把方法参数放入SPEL上下文中
+	// for (int i = 0; i < paraNameArr.length; i++) {
+	// context.setVariable(paraNameArr[i], args[i]);
+	// }
+	// return parser.parseExpression(key).getValue(context, String.class);
+	// }
 }

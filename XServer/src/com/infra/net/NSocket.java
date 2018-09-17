@@ -8,6 +8,9 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.core.App;
 import com.core.ByteArray;
 import com.core.Console;
@@ -24,6 +27,7 @@ import com.infra.event.ModuleEvent;
  * @description 非阻塞套接字
  */
 public class NSocket {
+	private static Logger log = LoggerFactory.getLogger(NSocket.class);
 	private static final int SEND_CHALLENGE = 0; // 发送验证状态
 	private static final int RECEIVE_CHALLENGE = 1; // 接收码验证和客户端公钥状态
 	private static final int NORMAL = 2; // 正常通信状态
@@ -123,11 +127,14 @@ public class NSocket {
 			return;
 		if (bs.length > BODY_MAX_LEN) {
 			// TODO:派发数据包过大消息
+			log.warn("DataPack is Too Long! Won't Send it.");
 			return;
 		}
 		if (_socketChannel.isConnected()) {
-			_outQueue.offer(XUtil.intToBytes(bs.length));
-			_outQueue.offer(bs);
+			byte[] totalBytes = new byte[HEAD_LEN + bs.length];
+			System.arraycopy(XUtil.intToBytes(bs.length), 0, totalBytes, 0, HEAD_LEN);
+			System.arraycopy(bs, 0, totalBytes, HEAD_LEN, bs.length);
+			_outQueue.offer(totalBytes);
 		} else {
 			System.out.println("Socket is Disconnected");
 		}

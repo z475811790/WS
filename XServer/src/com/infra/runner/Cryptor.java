@@ -98,9 +98,10 @@ public class Cryptor {
 					if (_keyMap.get(sbs.string) == null)
 						return;
 					// System.out.println("en:" + Hex.fromArray(sbs.bs));
+					// long start = System.currentTimeMillis();
+					// System.out.println("len:" + sbs.bs.length);
 					byte[] bs = (_keyMap.get(sbs.string)).decryptBytes(sbs.bs);
-					// if(Config.dataCompress)
-					// decryptedBytes.uncompress();
+					// System.out.println(System.currentTimeMillis() - start);
 					sbs.bs = bs;
 					// System.out.println("de:" + Hex.fromArray(bs));
 					App.dispatch(ModuleEvent.SERVER_WORKER_CRYPT_DECRYPT_COMPLETE, sbs);
@@ -151,7 +152,7 @@ public class Cryptor {
 		}
 
 		private DestinationData genData(String sosketId, byte[] bs) {
-//			System.out.println("beEn:"+Hex.fromArray(bs));
+			// System.out.println("beEn:"+Hex.fromArray(bs));
 			byte[] enbs = _keyMap.get(sosketId).encryptBytes(bs);
 			return new DestinationData(sosketId, enbs);
 		}

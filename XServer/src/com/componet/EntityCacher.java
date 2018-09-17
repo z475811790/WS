@@ -2,21 +2,26 @@ package com.componet;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
 
+/**
+ * @author xYzDl
+ * @date 2018年9月15日 下午11:00:47
+ * @description Ehcache的封装类，Entity缓存专用
+ */
 @Component
-public class Cacher {
+public class EntityCacher {
 
 	private CacheManager cacheManager;
 
-	public Cacher() {
+	public EntityCacher() {
+		// 获取com.entity下所有的实体类，类名+Cache为一个Cache实例的名字
 		cacheManager = CacheManager.create();
 		List<String> list = getClassName("com.entity");
 		list.forEach(e -> {
@@ -48,40 +53,40 @@ public class Cacher {
 		return myClassName;
 	}
 
-	private Map<String, Object> map = new HashMap<>(1000);
-
 	/**
-	 * 把对象放入Hash中
+	 * 添加缓存
+	 * 
+	 * @param cacheName
+	 * @param key
+	 * @param obj
 	 */
-	public void set(String key, String field, Object o) {
-		map.put(key + field, o);
+	public void set(String cacheName, String key, Object obj) {
+		if (cacheManager.getCache(cacheName) == null)
+			return;
+		cacheManager.getCache(cacheName).put(new Element(key, obj));
 	}
 
 	/**
-	 * 从Hash中获取对象
+	 * 获取缓存
+	 * 
+	 * @param cacheName
+	 * @param key
+	 * @return
 	 */
-	public Object get(String key, String field) {
-		return map.get(key + field);
+	public Object get(String cacheName, String key) {
+		Element e = cacheManager.getCache(cacheName).get(key);
+		return e == null ? null : e.getObjectValue();
 	}
 
 	/**
-	 * 从Hash中获取对象,转换成制定类型
+	 * 删除缓存
+	 * 
+	 * @param cacheName
+	 * @param key
 	 */
-	public <T> T hget(String key, String field, Class<T> clazz) {
-		Object text = map.get(key + field);
-		T result = null;
-		try {
-			result = clazz.newInstance();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-
-	/**
-	 * 从Hash中删除对象
-	 */
-	public void del(String key, String field) {
-		map.remove(key + field);
+	public void del(String cacheName, String key) {
+		if (cacheManager.getCache(cacheName) == null)
+			return;
+		cacheManager.getCache(cacheName).remove(key);
 	}
 }

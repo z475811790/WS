@@ -26,9 +26,9 @@ public class TestCaseCacheAspectJ {
 		s = service.selectById(1);
 		s.setId(null);
 		service.insert(s);
-		service.selectById(30);
-		service.deleteById(30);
-		s = service.selectById(30);
+		service.selectById(15);
+		service.deleteById(15);
+		s = service.selectById(15);
 		System.out.println(s);
 	}
 
