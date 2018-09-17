@@ -24,7 +24,6 @@ public class Cacher {
 			if (c == null)
 				cacheManager.addCache(e + "Cache");
 		});
-		System.out.println(list.size());
 	}
 
 	private static List<String> getClassName(String packageName) {

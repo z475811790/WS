@@ -9,8 +9,6 @@ import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.entity.Student;
-
 public abstract class BaseService {
 	@Autowired
 	protected SqlSessionTemplate sqlSessionTemplate;

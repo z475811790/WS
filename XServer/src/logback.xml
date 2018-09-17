@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration debug="false" scan="true" scanPeriod="1 seconds">
+<configuration debug="false" scan="true" scanPeriod="10 seconds">
 
 	<contextName>logback</contextName>
 
-	<property name="log.path" value="E:\\logback.log" />
+	<property name="log.path" value="logs/logback.log" />
 
 	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-		<!-- <filter class="com.example.logback.filter.MyFilter" /> -->
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
 			<level>ERROR</level>
 		</filter>
@@ -20,6 +19,8 @@
 		<file>${log.path}</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<fileNamePattern>${log.path}.%d{yyyy-MM-dd}.zip</fileNamePattern>
+			<!--日志文件保留天数-->
+			<MaxHistory>3</MaxHistory>
 		</rollingPolicy>
 
 		<encoder>
