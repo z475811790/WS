@@ -13,12 +13,12 @@ import com.core.App;
 import com.core.Console;
 import com.core.crypt.AESCrypt;
 import com.core.crypt.RSACrypt;
-import com.core.event.XEvent;
 import com.core.util.Hex;
 import com.infra.Config;
 import com.infra.DestinationData;
-import com.infra.Stringbytes;
+import com.infra.SocketData;
 import com.infra.event.ModuleEvent;
+import com.infra.net.NSocket;
 
 /**
  * @author xYzDl
@@ -31,7 +31,7 @@ public class Cryptor {
 	private byte[] LOCK_ENCRYPTOR_POOL = new byte[0];
 
 	private Map<String, AESCrypt> _keyMap = new HashMap<>();
-	private Queue<Stringbytes> createKeyMsgQueue = new LinkedList<>();
+	private Queue<SocketData> createKeyMsgQueue = new LinkedList<>();
 	private Queue<Decryptor> decryptorPool = new LinkedList<>();
 	private ExecutorService deExePool = Executors.newCachedThreadPool();
 	private Queue<Encryptor> encryptorPool = new LinkedList<>();
@@ -40,37 +40,34 @@ public class Cryptor {
 	private boolean runMark = true;// 线程停止标记,因为stop方法不建议使用,所以采用标记停止
 
 	public Cryptor() {
-		App.addModuleListener(ModuleEvent.SERVER_WORKER_CRYPT_CREAT_AES, this::onCreateAES);
-		App.addModuleListener(ModuleEvent.SERVER_WORKER_CRYPT_DECRYPT, this::onDecrypt);
-		App.addModuleListener(ModuleEvent.SERVER_WORKER_CRYPT_ENCRYPT, this::onEncrypt);
 		new AESCreator().start();
 	}
 
-	private void onCreateAES(XEvent xEvent) {
+	public void createAES(SocketData socketData) {
 		synchronized (LOCK_CREATE_AES) {
-			createKeyMsgQueue.offer((Stringbytes) xEvent.data);
+			createKeyMsgQueue.offer(socketData);
 			LOCK_CREATE_AES.notify();
 		}
 	}
 
-	private void onDecrypt(XEvent xEvent) {
+	public void decrypt(SocketData socketData) {
 		Decryptor decryptor;
 		synchronized (LOCK_DECRYPTOR_POOL) {
 			decryptor = decryptorPool.poll();
 			if (decryptor == null)
 				decryptor = new Decryptor();
-			decryptor.event = xEvent;
+			decryptor.sbs = socketData;
 			deExePool.execute(decryptor);
 		}
 	}
 
-	private void onEncrypt(XEvent xEvent) {
+	public void encrypt(DestinationData destinationData) {
 		Encryptor encryptor;
 		synchronized (LOCK_ENCRYPTOR_POOL) {
 			encryptor = encryptorPool.poll();
 			if (encryptor == null)
 				encryptor = new Encryptor();
-			encryptor.event = xEvent;
+			encryptor.des = destinationData;
 			enExePool.execute(encryptor);
 		}
 	}
@@ -87,22 +84,20 @@ public class Cryptor {
 	}
 
 	class Decryptor implements Runnable {
-		public XEvent event;
-		public Stringbytes sbs;
+		public SocketData sbs;
 
 		@Override
 		public void run() {
 			try {
-				if (event != null && event.data instanceof Stringbytes) {
-					sbs = (Stringbytes) event.data;
-					if (_keyMap.get(sbs.string) == null)
+				if (sbs != null) {
+					if (_keyMap.get(sbs.socketId) == null)
 						return;
 					// System.out.println("en:" + Hex.fromArray(sbs.bs));
 					// long start = System.currentTimeMillis();
 					// System.out.println("len:" + sbs.bs.length);
-					byte[] bs = (_keyMap.get(sbs.string)).decryptBytes(sbs.bs);
+					byte[] bs = (_keyMap.get(sbs.socketId)).decryptBytes(sbs.dataBytes);
 					// System.out.println(System.currentTimeMillis() - start);
-					sbs.bs = bs;
+					sbs.dataBytes = bs;
 					// System.out.println("de:" + Hex.fromArray(bs));
 					App.dispatch(ModuleEvent.SERVER_WORKER_CRYPT_DECRYPT_COMPLETE, sbs);
 				}
@@ -110,6 +105,7 @@ public class Cryptor {
 				e.printStackTrace();
 			} finally {
 				synchronized (LOCK_DECRYPTOR_POOL) {
+					sbs = null;
 					decryptorPool.offer(this);
 				}
 			}
@@ -117,15 +113,12 @@ public class Cryptor {
 	}
 
 	class Encryptor implements Runnable {
-		public XEvent event;
 		public DestinationData des;
 
 		@Override
 		public void run() {
 			try {
-				if (event != null && event.data instanceof DestinationData) {
-					des = (DestinationData) event.data;
-
+				if (des != null) {
 					if (des.socketId != null && _keyMap.get(des.socketId) != null) {
 						App.dispatch(ModuleEvent.SERVER_WORKER_SEND_SOCKET_MESSAGE, genData(des.socketId, des.msgByes));
 					}
@@ -167,7 +160,7 @@ public class Cryptor {
 		@Override
 		public void run() {
 			try {
-				Stringbytes args;
+				SocketData args;
 				String socketId;
 				byte[] pk;
 				AESCrypt aes;
@@ -178,8 +171,8 @@ public class Cryptor {
 						if (args == null) {
 							LOCK_CREATE_AES.wait();
 						} else {
-							socketId = args.string;
-							pk = args.bs;
+							socketId = args.socketId;
+							pk = args.dataBytes;
 							aes = new AESCrypt();
 							aes.generateRandomKey();
 							_keyMap.put(socketId, aes);
@@ -189,7 +182,7 @@ public class Cryptor {
 							Console.addMsg("s-sk:" + Hex.fromArray(aes.getSecretKey()));
 							byte[] encrypted = rsa.encrypt(aes.getSecretKey());
 							Console.addMsg("afterEn:" + Hex.fromArray(encrypted));
-							App.dispatch(ModuleEvent.CREATE_AES_COMPLETE, new Stringbytes(socketId, encrypted));
+							NSocket.createAESComplete(new SocketData(socketId, encrypted));
 						}
 					}
 				}

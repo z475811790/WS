@@ -71,7 +71,6 @@ public class DataConfig {
 		for (DefaultElement element : list) {
 			c += element.attributes().size();
 		}
-		System.out.println("totalColumn:" + c);
 		return c;
 	}
 

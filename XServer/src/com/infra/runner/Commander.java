@@ -13,7 +13,7 @@ import com.core.event.XEvent;
 import com.core.util.XUtil;
 import com.infra.CommandData;
 import com.infra.Config;
-import com.infra.Stringbytes;
+import com.infra.SocketData;
 import com.infra.event.ModuleEvent;
 import com.message.Message.MessageEnum.MessageId;
 
@@ -56,15 +56,15 @@ public class Commander {
 	}
 
 	private void onDecryptComplete(XEvent xEvent) {
-		Stringbytes sbs = (Stringbytes) xEvent.data;
-		int msgId = XUtil.bytesToInt(sbs.bs);
-		byte[] msgBytes = new byte[sbs.bs.length - 4];
-		System.arraycopy(sbs.bs, 4, msgBytes, 0, msgBytes.length);
+		SocketData sbs = (SocketData) xEvent.data;
+		int msgId = XUtil.bytesToInt(sbs.dataBytes);
+		byte[] msgBytes = new byte[sbs.dataBytes.length - 4];
+		System.arraycopy(sbs.dataBytes, 4, msgBytes, 0, msgBytes.length);
 
 		// System.out.println("id:" + msgId);
 		// System.out.println(Hex.fromArray(msgBytes));
 		synchronized (LOCK_COMMAND) {
-			dataQueue.offer(new CommandData(sbs.string, msgId, msgBytes));
+			dataQueue.offer(new CommandData(sbs.socketId, msgId, msgBytes));
 			LOCK_COMMAND.notify();
 		}
 	}

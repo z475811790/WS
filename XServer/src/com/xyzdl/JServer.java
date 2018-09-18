@@ -25,12 +25,6 @@ public class JServer {
 		lb.start();
 	}
 
-	private void initSpringContext() {
-		// 一定要注意外部不要使用Spring容器中的类！！
-		BaseCommand.initContext(new ClassPathXmlApplicationContext("applicationContext.xml"));
-		Console.addMsg("SpringContext is Initialized Successfully");
-	}
-
 	// ------START-事件注册区
 	private void onInitServer(XEvent xEvent) {
 		// TODO Log4j
@@ -53,16 +47,19 @@ public class JServer {
 	}
 
 	@SuppressWarnings("unused")
-	private Cryptor cryptWorker;
-	@SuppressWarnings("unused")
 	private Commander commander;
 	@SuppressWarnings("unused")
 	private Courier courier;
 
 	private void initWorker() {
-		cryptWorker = new Cryptor();
 		commander = new Commander();
 		courier = new Courier();
+	}
+
+	private void initSpringContext() {
+		// 一定要注意外部不要使用Spring容器中的类！！
+		BaseCommand.initContext(new ClassPathXmlApplicationContext("applicationContext.xml"));
+		Console.addMsg("SpringContext is Initialized Successfully");
 	}
 
 	private void onInitServerFailed(XEvent xEvent) {

@@ -14,12 +14,12 @@ import org.slf4j.LoggerFactory;
 import com.core.App;
 import com.core.ByteArray;
 import com.core.Console;
-import com.core.event.XEvent;
 import com.core.interfaces.IFunctionNoneArgs;
 import com.core.util.XUtil;
 import com.infra.Config;
-import com.infra.Stringbytes;
+import com.infra.SocketData;
 import com.infra.event.ModuleEvent;
+import com.infra.runner.Cryptor;
 
 /**
  * @author xYzDl
@@ -35,6 +35,8 @@ public class NSocket {
 	private static final int HEAD_LEN = 4; // 数据包头,用来表示实际数据的长度,数据包去掉包头才是实际数据长度
 	private static final int BODY_MAX_LEN = 8192; // 8192
 													// 数据包体，最大长度8k，超出认为是异常包，断开链接
+	private static Cryptor cryptor = new Cryptor();
+
 	private SocketChannel _socketChannel;
 	private ByteBuffer _innerBuffer = ByteBuffer.allocate(HEAD_LEN + BODY_MAX_LEN);
 	private int _readIndex = 0;
@@ -82,18 +84,14 @@ public class NSocket {
 	//
 
 	// ------START-事件注册区
-	static {
-		App.addModuleListener(ModuleEvent.CREATE_AES_COMPLETE, NSocket::onCreateAESComplete);
-	}
 
-	private static void onCreateAESComplete(XEvent xEvent) {
-		Stringbytes args = (Stringbytes) xEvent.data;
-		NSocket nSocket = getSocket(args.string);
+	public static void createAESComplete(SocketData args) {
+		NSocket nSocket = getSocket(args.socketId);
 		if (nSocket == null)
 			return;
-		nSocket.writeDataPack(args.bs);
+		nSocket.writeDataPack(args.dataBytes);
 		nSocket._currState = NORMAL;
-		App.dispatch(ModuleEvent.SOCKET_STATE_TO_NORMAL, NSocket.numSocket);
+		App.dispatch(ModuleEvent.SOCKET_STATE_TO_NORMAL, args.socketId);
 	}
 
 	// ------END---事件注册区
@@ -212,7 +210,7 @@ public class NSocket {
 			return;
 		}
 		Console.addMsg("State Change to RECEIVE_PUB_KEY");
-		App.dispatch(ModuleEvent.SERVER_WORKER_CRYPT_CREAT_AES, new Stringbytes(getSocketId(), byteArray.getAvailableBytes()));
+		cryptor.createAES(new SocketData(getSocketId(), byteArray.getAvailableBytes()));
 	}
 
 	private void readMsg() {
@@ -222,7 +220,7 @@ public class NSocket {
 		}
 		// ******多线程派发事件******------第一步-服务端在多线程的情况下,该步骤之后就可以多线程读取访问socket(用专门的IO处理线程的话可以更高效)
 		// ******多线程派发事件******------第二步-到这里表示客户端发来的一个完整的消息数据包已经接收到了,派发给解码线程(用可以调用硬件解码的线程解码消息可以更加高效)
-		App.dispatch(ModuleEvent.SERVER_WORKER_CRYPT_DECRYPT, new Stringbytes(getSocketId(), bs));
+		cryptor.decrypt(new SocketData(getSocketId(), bs));
 		// ******多线程派发事件******------第三步-向一个根据重要性分组的线程安全消息队列加入消息--暂不实现
 		// ******多线程派发事件******------第四步-一个线程专门从消息队列中循环取消息后派发消息
 		// ******多线程派发事件******------第五步-消息派发器用多线程的方式去处理每一条消息,每个方法用一个线程去执行
@@ -237,17 +235,18 @@ public class NSocket {
 			else
 				bytesLen = readInt();
 			if (bytesLen < 0) {
+				log.error("Fatal Error:Data Length Must >= 0!");
 				App.dispatch(ModuleEvent.SOCKET_CLOSE, "Fatal Error:Data Length Must >= 0!");
 				throw new RuntimeException("Fatal Error:Data Length Must >= 0!");
 			}
 			if (bytesLen == 0) {
-				App.dispatch(ModuleEvent.SOCKET_DATA_PACKAGE_EMPTY);
+				log.warn("SOCKET_DATA_PACKAGE_EMPTY");
 				return null;
 			}
 		}
 
 		if (bytesAvailable() < bytesLen) {
-			App.dispatch(ModuleEvent.SOCKET_DATA_PACKAGE_NOT_ENOUGH);
+			log.warn("SOCKET_DATA_PACKAGE_NOT_ENOUGH");
 			return null;
 		}
 

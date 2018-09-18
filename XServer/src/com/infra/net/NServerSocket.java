@@ -108,6 +108,7 @@ public class NServerSocket {
 						socketChannel = serverSocketChannel.accept();
 						NSocket nSocket = NSocket.create(socketChannel);
 						socketChannel.configureBlocking(false).register(subSelector, SelectionKey.OP_READ | SelectionKey.OP_WRITE).attach(nSocket);
+						App.dispatch(ModuleEvent.SERVER_SOCKET_CONNECT, nSocket);
 						nSocket.sendVersion();
 						Console.addMsg("Start to Verify...");
 					}
