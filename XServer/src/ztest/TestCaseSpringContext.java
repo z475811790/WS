@@ -50,4 +50,8 @@ public class TestCaseSpringContext {
 			CommonUtil.outObject(s);
 		}
 	}
+	@Test
+	public void temp3() {
+		
+	}
 }

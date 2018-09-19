@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 import com.componet.BaseCommand;
 import com.infra.CommandData;
 import com.infra.Config;
-import com.infra.SocketData;
+import com.infra.SocketInData;
 import com.message.Message.MessageEnum.MessageId;
 
 import xyzdlcore.util.XUtil;
@@ -52,7 +52,7 @@ public class Commander {
 		}
 	}
 
-	public void onDecryptComplete(SocketData socketData) {
+	public void onDecryptComplete(SocketInData socketData) {
 		int msgId = XUtil.bytesToInt(socketData.dataBytes);
 		byte[] msgBytes = new byte[socketData.dataBytes.length - 4];
 		System.arraycopy(socketData.dataBytes, 4, msgBytes, 0, msgBytes.length);

@@ -20,7 +20,7 @@ public class XCTimer extends XTimer {
 	/**
 	 * 获取服务器时间 时间戳
 	 */
-	public static long serverTime() {
+	public static long getServerTime() {
 		return _nowTime - _setTime + _synTime + TIME_OFFSET;
 	}
 }

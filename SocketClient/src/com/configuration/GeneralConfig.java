@@ -6,10 +6,10 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.tree.DefaultAttribute;
 
-import xyzdlcore.CoreUtil;
 import xyzdlcore.loader.LoaderBean;
 import xyzdlcore.util.AssetUtil;
 import xyzdlcore.util.StringUtil;
+import xyzdlcore.util.XUtil;
 
 /**
  * @author xYzDl
@@ -37,6 +37,6 @@ public class GeneralConfig {
 		List<DefaultAttribute> list = singleton()._root.selectNodes("//" + name + "[1]/@val");
 		if (list.isEmpty())
 			return "" + name;
-		return CoreUtil.typeFormat(list.get(0).getValue());
+		return XUtil.typeFormat(list.get(0).getValue());
 	}
 }

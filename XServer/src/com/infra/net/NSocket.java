@@ -12,8 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.infra.Config;
-import com.infra.DestinationData;
-import com.infra.SocketData;
+import com.infra.SocketOutData;
+import com.infra.SocketInData;
 import com.infra.event.ModuleEvent;
 import com.infra.runner.Cryptor;
 
@@ -83,7 +83,7 @@ public class NSocket {
 		return _socketMap.get(socketId);
 	}
 
-	public static void createAESComplete(SocketData args) {
+	public static void createAESComplete(SocketInData args) {
 		NSocket nSocket = getSocket(args.socketId);
 		if (nSocket == null)
 			return;
@@ -92,7 +92,7 @@ public class NSocket {
 		App.dispatch(ModuleEvent.SOCKET_STATE_TO_NORMAL, args.socketId);
 	}
 
-	public static void sendMsgData(DestinationData destinationData) {
+	public static void sendMsgData(SocketOutData destinationData) {
 		cryptor.encrypt(destinationData);
 	}
 
@@ -215,7 +215,7 @@ public class NSocket {
 			return;
 		}
 		Console.addMsg("State Change to RECEIVE_PUB_KEY");
-		cryptor.createAES(new SocketData(getSocketId(), byteArray.getAvailableBytes()));
+		cryptor.createAES(new SocketInData(getSocketId(), byteArray.getAvailableBytes()));
 	}
 
 	private void readMsg() {
@@ -225,7 +225,7 @@ public class NSocket {
 		}
 		// ******多线程派发事件******------第一步-服务端在多线程的情况下,该步骤之后就可以多线程读取访问socket(用专门的IO处理线程的话可以更高效)
 		// ******多线程派发事件******------第二步-到这里表示客户端发来的一个完整的消息数据包已经接收到了,派发给解码线程(用可以调用硬件解码的线程解码消息可以更加高效)
-		cryptor.decrypt(new SocketData(getSocketId(), bs));
+		cryptor.decrypt(new SocketInData(getSocketId(), bs));
 		// ******多线程派发事件******------第三步-向一个根据重要性分组的线程安全消息队列加入消息--暂不实现
 		// ******多线程派发事件******------第四步-一个线程专门从消息队列中循环取消息后派发消息
 		// ******多线程派发事件******------第五步-消息派发器用多线程的方式去处理每一条消息,每个方法用一个线程去执行

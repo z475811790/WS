@@ -12,6 +12,11 @@ import org.apache.ibatis.type.JdbcType;
 
 import com.util.CommonUtil;
 
+/**
+ * @author xYzDl
+ * @date 2018年9月19日 下午11:49:12
+ * @description 类似这种数据 1,2;3,4 以分号分组，转换成KV映射
+ */
 public class StringMapTypeHandler extends BaseTypeHandler<Map<String, String>> {
 
 	@Override

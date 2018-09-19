@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.protobuf.Message;
-import com.infra.DestinationData;
+import com.infra.SocketOutData;
 import com.infra.net.NSocket;
 import com.message.Message.MessageEnum.MessageId;
 
@@ -20,7 +20,7 @@ public class SocketOuter {
 	 * 给外部使用的向所有端发消息
 	 */
 	public void sendSocketMessageToAll(Message msg) {
-		DestinationData des = new DestinationData();
+		SocketOutData des = new SocketOutData();
 		des.socketIds = socketMap.getAllSocketIds();
 		des.msgByes = packMsg(msg);
 		NSocket.sendMsgData(des);
@@ -33,7 +33,7 @@ public class SocketOuter {
 	 *            目的地类型
 	 */
 	public void sendSocketMessage(Message msg, String desId) {
-		DestinationData des = new DestinationData();
+		SocketOutData des = new SocketOutData();
 		des.socketId = desId;
 		des.msgByes = packMsg(msg);
 		NSocket.sendMsgData(des);

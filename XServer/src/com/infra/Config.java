@@ -1,6 +1,6 @@
 package com.infra;
 
-import xyzdlcore.CoreUtil;
+import xyzdlcore.util.XUtil;
 
 /**
  * @author xYzDl
@@ -16,6 +16,7 @@ public class Config {
 	public static final String COMMAND_PREFIX = "com.command.";
 	public static final String COMMAND_SUFFIX = "CMD";
 	public static final int SYN_HEARTBEAT = 15000;// 发送心跳和同步时间的间隔，毫秒
+	public static final int SYN_DB_INSERT_UPDATE = 1000 * 60 * 5;// 同步插入更新数据库时间间隔，毫秒
 
 	public static int challenge = 0;
 	public static String logFilePath = "";
@@ -24,6 +25,6 @@ public class Config {
 	public static int port = 8080;
 
 	public static void initConf() {
-		CoreUtil.parseConf(Config.class, CONF_URL);
+		XUtil.parseConf(Config.class, CONF_URL);
 	}
 }

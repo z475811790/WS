@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import com.infra.DestinationData;
+import com.infra.SocketOutData;
 import com.infra.net.NSocket;
 
 /**
@@ -15,7 +15,7 @@ import com.infra.net.NSocket;
 public class Courier {
 	private byte[] LOCK = new byte[0];
 
-	private Queue<DestinationData> dataQueue = new LinkedList<>();
+	private Queue<SocketOutData> dataQueue = new LinkedList<>();
 
 	private boolean runMark = true;// 线程停止标记,因为stop方法不建议使用,所以采用标记停止
 
@@ -23,14 +23,14 @@ public class Courier {
 		new MsgSender().start();
 	}
 
-	public void onSendSocketMsg(DestinationData data) {
+	public void onSendSocketMsg(SocketOutData data) {
 		synchronized (LOCK) {
 			dataQueue.offer(data);
 			LOCK.notify();
 		}
 	}
 
-	public void onSendSocketMsg(List<DestinationData> datas) {
+	public void onSendSocketMsg(List<SocketOutData> datas) {
 		synchronized (LOCK) {
 			dataQueue.addAll(datas);
 			LOCK.notify();
@@ -57,7 +57,7 @@ public class Courier {
 		@Override
 		public void run() {
 			try {
-				DestinationData data;
+				SocketOutData data;
 				NSocket nSocket;
 				while (runMark) {
 					synchronized (LOCK) {

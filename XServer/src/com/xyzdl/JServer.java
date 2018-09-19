@@ -1,16 +1,21 @@
 package com.xyzdl;
 
 import java.util.Date;
+import java.util.Map;
 
 import javax.swing.JFrame;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.componet.BaseCommand;
+import com.componet.BaseService;
 import com.infra.Config;
 import com.infra.net.NServerSocket;
 
 import xyzdlcore.Console;
+import xyzdlcore.XTimer;
+import xyzdlcore.event.IEventHandler;
 import xyzdlcore.event.XEvent;
 import xyzdlcore.loader.LoaderBean;
 
@@ -45,8 +50,21 @@ public class JServer {
 
 	private void initSpringContext() {
 		// 一定要注意外部不要使用Spring容器中的类！！
-		BaseCommand.initContext(new ClassPathXmlApplicationContext("applicationContext.xml"));
+		ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+		BaseCommand.initContext(context);
 		Console.addMsg("SpringContext is Initialized Successfully");
+		Map<String, BaseService> map = context.getBeansOfType(BaseService.class);
+		XTimer.add(new IEventHandler() {
+
+			@Override
+			public void execute(XEvent xEvent) throws Exception {
+				// TODO 定时任务属于具体业务，应该放到专门的地方，用quatrz
+				map.values().forEach(e -> {
+					e.synBatchInsert();
+					e.synBatchUpdate();
+				});
+			}
+		}, Config.SYN_DB_INSERT_UPDATE);
 	}
 
 	private void onInitServerFailed(XEvent xEvent) {

@@ -9,6 +9,11 @@ import java.util.Map;
 
 import com.mysql.jdbc.StringUtils;
 
+/**
+ * @author xYzDl
+ * @date 2018年9月19日 下午11:52:47
+ * @description 公用工具
+ */
 public class CommonUtil {
 	public static void outObject(Object o) {
 		if (o == null)

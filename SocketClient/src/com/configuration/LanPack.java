@@ -7,7 +7,8 @@ import java.util.Map;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import xyzdlcore.constant.CommonConstant;
+import com.constant.CommonConstant;
+
 import xyzdlcore.loader.LoaderBean;
 import xyzdlcore.util.AssetUtil;
 

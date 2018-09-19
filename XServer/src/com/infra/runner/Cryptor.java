@@ -10,8 +10,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.infra.Config;
-import com.infra.DestinationData;
-import com.infra.SocketData;
+import com.infra.SocketOutData;
+import com.infra.SocketInData;
 import com.infra.net.NSocket;
 
 import xyzdlcore.Console;
@@ -30,7 +30,7 @@ public class Cryptor {
 	private byte[] LOCK_ENCRYPTOR_POOL = new byte[0];
 
 	private Map<String, AESCrypt> _keyMap = new HashMap<>();
-	private Queue<SocketData> createKeyMsgQueue = new LinkedList<>();
+	private Queue<SocketInData> createKeyMsgQueue = new LinkedList<>();
 	private Queue<Decryptor> decryptorPool = new LinkedList<>();
 	private ExecutorService deExePool = Executors.newCachedThreadPool();
 	private Queue<Encryptor> encryptorPool = new LinkedList<>();
@@ -44,14 +44,14 @@ public class Cryptor {
 		new AESCreator().start();
 	}
 
-	public void createAES(SocketData socketData) {
+	public void createAES(SocketInData socketData) {
 		synchronized (LOCK_CREATE_AES) {
 			createKeyMsgQueue.offer(socketData);
 			LOCK_CREATE_AES.notify();
 		}
 	}
 
-	public void decrypt(SocketData socketData) {
+	public void decrypt(SocketInData socketData) {
 		Decryptor decryptor;
 		synchronized (LOCK_DECRYPTOR_POOL) {
 			decryptor = decryptorPool.poll();
@@ -62,7 +62,7 @@ public class Cryptor {
 		}
 	}
 
-	public void encrypt(DestinationData destinationData) {
+	public void encrypt(SocketOutData destinationData) {
 		Encryptor encryptor;
 		synchronized (LOCK_ENCRYPTOR_POOL) {
 			encryptor = encryptorPool.poll();
@@ -85,7 +85,7 @@ public class Cryptor {
 	}
 
 	class Decryptor implements Runnable {
-		public SocketData sbs;
+		public SocketInData sbs;
 
 		@Override
 		public void run() {
@@ -114,7 +114,7 @@ public class Cryptor {
 	}
 
 	class Encryptor implements Runnable {
-		public DestinationData des;
+		public SocketOutData des;
 
 		@Override
 		public void run() {
@@ -124,7 +124,7 @@ public class Cryptor {
 						courier.onSendSocketMsg(genData(des.socketId, des.msgByes));
 					}
 					if (des.socketIds != null && des.socketIds.size() > 0) {
-						List<DestinationData> list = new ArrayList<>();
+						List<SocketOutData> list = new ArrayList<>();
 						if (Config.IS_SAME_AESKEY) {
 							// TODO:AESKEY是同一个的情况
 						} else {
@@ -145,10 +145,10 @@ public class Cryptor {
 			}
 		}
 
-		private DestinationData genData(String sosketId, byte[] bs) {
+		private SocketOutData genData(String sosketId, byte[] bs) {
 			// System.out.println("beEn:"+Hex.fromArray(bs));
 			byte[] enbs = _keyMap.get(sosketId).encryptBytes(bs);
-			return new DestinationData(sosketId, enbs);
+			return new SocketOutData(sosketId, enbs);
 		}
 	}
 
@@ -161,7 +161,7 @@ public class Cryptor {
 		@Override
 		public void run() {
 			try {
-				SocketData args;
+				SocketInData args;
 				String socketId;
 				byte[] pk;
 				AESCrypt aes;
@@ -183,7 +183,7 @@ public class Cryptor {
 							Console.addMsg("s-sk:" + Hex.fromArray(aes.getSecretKey()));
 							byte[] encrypted = rsa.encrypt(aes.getSecretKey());
 							Console.addMsg("afterEn:" + Hex.fromArray(encrypted));
-							NSocket.createAESComplete(new SocketData(socketId, encrypted));
+							NSocket.createAESComplete(new SocketInData(socketId, encrypted));
 						}
 					}
 				}

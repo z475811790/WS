@@ -9,6 +9,11 @@ import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * @author xYzDl
+ * @date 2018年9月19日 下午11:59:41
+ * @description Service基类，负责批量插入和更新
+ */
 public abstract class BaseService {
 	@Autowired
 	protected SqlSessionTemplate sqlSessionTemplate;

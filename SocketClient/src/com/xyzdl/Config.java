@@ -1,7 +1,7 @@
 package com.xyzdl;
 
-import xyzdlcore.CoreUtil;
 import xyzdlcore.util.AssetUtil;
+import xyzdlcore.util.XUtil;
 
 /**
  * @author xYzDl
@@ -19,6 +19,6 @@ public class Config {
 	public static int port = 0;
 
 	public static void initConf() {
-		CoreUtil.parseConf(Config.class, AssetUtil.COMMON_CONFIG);
+		XUtil.parseConf(Config.class, AssetUtil.COMMON_CONFIG);
 	}
 }
