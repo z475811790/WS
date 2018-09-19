@@ -3,10 +3,9 @@ package com.componet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.core.App;
 import com.google.protobuf.Message;
 import com.infra.DestinationData;
-import com.infra.event.ModuleEvent;
+import com.infra.net.NSocket;
 import com.message.Message.MessageEnum.MessageId;
 
 @Component
@@ -24,7 +23,7 @@ public class SocketOuter {
 		DestinationData des = new DestinationData();
 		des.socketIds = socketMap.getAllSocketIds();
 		des.msgByes = packMsg(msg);
-		App.dispatch(ModuleEvent.SERVER_WORKER_CRYPT_ENCRYPT, des);
+		NSocket.sendMsgData(des);
 	}
 
 	/**
@@ -37,7 +36,7 @@ public class SocketOuter {
 		DestinationData des = new DestinationData();
 		des.socketId = desId;
 		des.msgByes = packMsg(msg);
-		App.dispatch(ModuleEvent.SERVER_WORKER_CRYPT_ENCRYPT, des);
+		NSocket.sendMsgData(des);
 	}
 
 	private byte[] packMsg(Message msg) {

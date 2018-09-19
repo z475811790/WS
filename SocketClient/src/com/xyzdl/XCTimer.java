@@ -1,6 +1,6 @@
 package com.xyzdl;
 
-import com.core.XTimer;
+import xyzdlcore.XTimer;
 
 /**
  * @author xYzDl

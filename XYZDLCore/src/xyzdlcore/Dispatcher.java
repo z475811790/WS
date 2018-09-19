@@ -1,12 +1,12 @@
-package com.core;
+package xyzdlcore;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.core.event.IEventHandler;
-import com.core.event.XEvent;
+import xyzdlcore.event.IEventHandler;
+import xyzdlcore.event.XEvent;
 
 /**
  * @author xYzDl

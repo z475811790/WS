@@ -7,9 +7,9 @@ import java.util.Map;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import com.core.constant.CommonConstant;
-import com.core.loader.LoaderBean;
-import com.core.util.AssetUtil;
+import xyzdlcore.constant.CommonConstant;
+import xyzdlcore.loader.LoaderBean;
+import xyzdlcore.util.AssetUtil;
 
 /**
  * @author xYzDl

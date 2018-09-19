@@ -6,10 +6,10 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.tree.DefaultAttribute;
 
-import com.core.CoreUtil;
-import com.core.loader.LoaderBean;
-import com.core.util.AssetUtil;
-import com.core.util.StringUtil;
+import xyzdlcore.CoreUtil;
+import xyzdlcore.loader.LoaderBean;
+import xyzdlcore.util.AssetUtil;
+import xyzdlcore.util.StringUtil;
 
 /**
  * @author xYzDl

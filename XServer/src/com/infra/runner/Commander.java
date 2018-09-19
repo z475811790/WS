@@ -8,14 +8,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.componet.BaseCommand;
-import com.core.App;
-import com.core.event.XEvent;
-import com.core.util.XUtil;
 import com.infra.CommandData;
 import com.infra.Config;
 import com.infra.SocketData;
-import com.infra.event.ModuleEvent;
 import com.message.Message.MessageEnum.MessageId;
+
+import xyzdlcore.util.XUtil;
 
 /**
  * @author xYzDl
@@ -35,7 +33,6 @@ public class Commander {
 
 	public Commander() {
 		registerMsg();
-		App.addModuleListener(ModuleEvent.SERVER_WORKER_CRYPT_DECRYPT_COMPLETE, this::onDecryptComplete);
 		new CommandDispatcher().start();
 	}
 
@@ -55,16 +52,14 @@ public class Commander {
 		}
 	}
 
-	private void onDecryptComplete(XEvent xEvent) {
-		SocketData sbs = (SocketData) xEvent.data;
-		int msgId = XUtil.bytesToInt(sbs.dataBytes);
-		byte[] msgBytes = new byte[sbs.dataBytes.length - 4];
-		System.arraycopy(sbs.dataBytes, 4, msgBytes, 0, msgBytes.length);
-
+	public void onDecryptComplete(SocketData socketData) {
+		int msgId = XUtil.bytesToInt(socketData.dataBytes);
+		byte[] msgBytes = new byte[socketData.dataBytes.length - 4];
+		System.arraycopy(socketData.dataBytes, 4, msgBytes, 0, msgBytes.length);
 		// System.out.println("id:" + msgId);
 		// System.out.println(Hex.fromArray(msgBytes));
 		synchronized (LOCK_COMMAND) {
-			dataQueue.offer(new CommandData(sbs.socketId, msgId, msgBytes));
+			dataQueue.offer(new CommandData(socketData.socketId, msgId, msgBytes));
 			LOCK_COMMAND.notify();
 		}
 	}

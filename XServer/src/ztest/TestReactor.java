@@ -7,13 +7,14 @@ import java.util.Scanner;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.core.Dispatcher;
-import com.core.event.XEvent;
-import com.core.util.Hex;
 import com.infra.Config;
 import com.infra.event.EventType;
 import com.infra.net.NServerSocket;
 import com.infra.net.NSocket;
+
+import xyzdlcore.Dispatcher;
+import xyzdlcore.event.XEvent;
+import xyzdlcore.util.Hex;
 
 public class TestReactor {
 	public boolean mark = true;

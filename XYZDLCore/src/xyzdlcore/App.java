@@ -1,6 +1,6 @@
-package com.core;
+package xyzdlcore;
 
-import com.core.event.IEventHandler;
+import xyzdlcore.event.IEventHandler;
 
 /**
  * @author xYzDl

@@ -1,9 +1,10 @@
 package test;
 
-import com.core.event.XEvent;
-import com.core.util.Hex;
 import com.event.EventType;
 //import com.net.XSocket;
+
+import xyzdlcore.event.XEvent;
+import xyzdlcore.util.Hex;
 
 public class TestCaseSocket {
 //	public static XSocket xSocket;

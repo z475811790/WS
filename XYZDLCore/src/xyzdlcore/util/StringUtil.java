@@ -1,4 +1,4 @@
-package com.core.util;
+package xyzdlcore.util;
 
 /**
  * @author xYzDl

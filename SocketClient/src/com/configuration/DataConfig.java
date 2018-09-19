@@ -13,8 +13,8 @@ import org.dom4j.Element;
 import org.dom4j.tree.DefaultAttribute;
 import org.dom4j.tree.DefaultElement;
 
-import com.core.loader.LoaderBean;
-import com.core.util.AssetUtil;
+import xyzdlcore.loader.LoaderBean;
+import xyzdlcore.util.AssetUtil;
 
 /**
  * @author xYzDl

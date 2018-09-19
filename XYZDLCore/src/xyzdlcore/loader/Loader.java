@@ -1,14 +1,14 @@
-﻿package com.core.loader;
+﻿package xyzdlcore.loader;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import com.core.ByteArray;
-import com.core.Dispatcher;
-import com.core.event.IEventHandler;
-import com.core.util.StringUtil;
+import xyzdlcore.ByteArray;
+import xyzdlcore.Dispatcher;
+import xyzdlcore.event.IEventHandler;
+import xyzdlcore.util.StringUtil;
 
 /**
  * @author xYzDl

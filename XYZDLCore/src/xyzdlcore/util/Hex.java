@@ -1,6 +1,6 @@
-package com.core.util;
+package xyzdlcore.util;
 
-import com.core.ByteArray;
+import xyzdlcore.ByteArray;
 
 /**
  * @author xYzDl

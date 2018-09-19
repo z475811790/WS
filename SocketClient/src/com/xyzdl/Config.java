@@ -1,7 +1,7 @@
 package com.xyzdl;
 
-import com.core.CoreUtil;
-import com.core.util.AssetUtil;
+import xyzdlcore.CoreUtil;
+import xyzdlcore.util.AssetUtil;
 
 /**
  * @author xYzDl

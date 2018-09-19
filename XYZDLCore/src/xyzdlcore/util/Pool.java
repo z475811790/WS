@@ -1,4 +1,4 @@
-package com.core.util;
+package xyzdlcore.util;
 
 import java.util.HashMap;
 import java.util.LinkedList;

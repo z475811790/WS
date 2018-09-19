@@ -1,7 +1,7 @@
 package ztest;
 
-import com.core.XTimer;
-import com.core.event.XEvent;
+import xyzdlcore.XTimer;
+import xyzdlcore.event.XEvent;
 
 public class TestCaseXTimer {
 

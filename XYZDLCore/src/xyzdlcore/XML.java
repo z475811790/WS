@@ -1,4 +1,4 @@
-package com.core;
+package xyzdlcore;
 
 import java.io.IOException;
 import java.io.Writer;

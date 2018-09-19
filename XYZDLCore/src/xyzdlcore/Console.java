@@ -1,4 +1,4 @@
-package com.core;
+package xyzdlcore;
 
 import java.awt.Component;
 import java.awt.Font;
@@ -15,9 +15,9 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 
-import com.core.event.IEventHandler;
-import com.core.event.XEvent;
-import com.core.util.StringUtil;
+import xyzdlcore.event.IEventHandler;
+import xyzdlcore.event.XEvent;
+import xyzdlcore.util.StringUtil;
 
 /**
  * @author xYzDl

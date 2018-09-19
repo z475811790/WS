@@ -1,4 +1,4 @@
-package com.core.loader;
+package xyzdlcore.loader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,10 +7,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import com.core.ByteArray;
-import com.core.XML;
-import com.core.event.IEventHandler;
-import com.core.event.XEvent;
+import xyzdlcore.ByteArray;
+import xyzdlcore.XML;
+import xyzdlcore.event.IEventHandler;
+import xyzdlcore.event.XEvent;
 
 /**
  * @author xYzDl

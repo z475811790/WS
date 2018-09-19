@@ -1,4 +1,4 @@
-package com.core.util;
+package xyzdlcore.util;
 
 import java.math.BigInteger;
 import java.net.Socket;

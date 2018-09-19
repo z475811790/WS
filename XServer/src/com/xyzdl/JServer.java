@@ -7,14 +7,12 @@ import javax.swing.JFrame;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.componet.BaseCommand;
-import com.core.Console;
-import com.core.event.XEvent;
-import com.core.loader.LoaderBean;
 import com.infra.Config;
 import com.infra.net.NServerSocket;
-import com.infra.runner.Commander;
-import com.infra.runner.Courier;
-import com.infra.runner.Cryptor;
+
+import xyzdlcore.Console;
+import xyzdlcore.event.XEvent;
+import xyzdlcore.loader.LoaderBean;
 
 public class JServer {
 
@@ -30,9 +28,8 @@ public class JServer {
 		// TODO Log4j
 		Config.initConf();// 第一:加载好核心配置文件后,初始化配置类
 		initView();// 第二:初始化基本界面
-		initWorker();// 第三:初始化子线程
-		initSpringContext();// 第四:初始化SpringContext
-		new NServerSocket();// 第五:初始化服务器通信接口
+		initSpringContext();// 第三:初始化SpringContext
+		new NServerSocket();// 第四:初始化服务器通信接口
 	}
 
 	private void initView() {
@@ -44,16 +41,6 @@ public class JServer {
 		Console.addMsg("Welcome to Server " + new Date().toString());
 		Console.addMsg("Version " + Config.SERVER_VERSION);
 		frame.setVisible(true);
-	}
-
-	@SuppressWarnings("unused")
-	private Commander commander;
-	@SuppressWarnings("unused")
-	private Courier courier;
-
-	private void initWorker() {
-		commander = new Commander();
-		courier = new Courier();
 	}
 
 	private void initSpringContext() {

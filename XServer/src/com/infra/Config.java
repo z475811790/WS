@@ -1,6 +1,6 @@
 package com.infra;
 
-import com.core.CoreUtil;
+import xyzdlcore.CoreUtil;
 
 /**
  * @author xYzDl

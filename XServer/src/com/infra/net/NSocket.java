@@ -11,15 +11,17 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.core.App;
-import com.core.ByteArray;
-import com.core.Console;
-import com.core.interfaces.IFunctionNoneArgs;
-import com.core.util.XUtil;
 import com.infra.Config;
+import com.infra.DestinationData;
 import com.infra.SocketData;
 import com.infra.event.ModuleEvent;
 import com.infra.runner.Cryptor;
+
+import xyzdlcore.App;
+import xyzdlcore.ByteArray;
+import xyzdlcore.Console;
+import xyzdlcore.interfaces.IFunctionNoneArgs;
+import xyzdlcore.util.XUtil;
 
 /**
  * @author xYzDl
@@ -81,10 +83,6 @@ public class NSocket {
 		return _socketMap.get(socketId);
 	}
 
-	//
-
-	// ------START-事件注册区
-
 	public static void createAESComplete(SocketData args) {
 		NSocket nSocket = getSocket(args.socketId);
 		if (nSocket == null)
@@ -94,6 +92,13 @@ public class NSocket {
 		App.dispatch(ModuleEvent.SOCKET_STATE_TO_NORMAL, args.socketId);
 	}
 
+	public static void sendMsgData(DestinationData destinationData) {
+		cryptor.encrypt(destinationData);
+	}
+
+	//
+
+	// ------START-事件注册区
 	// ------END---事件注册区
 	// ------START-公共方法区
 	public void sendVersion() {

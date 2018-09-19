@@ -15,8 +15,8 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.core.crypt.AESCrypt;
-import com.core.util.Hex;
+import xyzdlcore.crypt.AESCrypt;
+import xyzdlcore.util.Hex;
 
 public class TestCaseCrypto {
 

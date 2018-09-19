@@ -1,10 +1,10 @@
 package ztest;
 
-import com.core.ByteArray;
-import com.core.event.IEventHandler;
-import com.core.event.XEvent;
-import com.core.loader.Loader;
-import com.core.loader.LoaderEvent;
+import xyzdlcore.ByteArray;
+import xyzdlcore.event.IEventHandler;
+import xyzdlcore.event.XEvent;
+import xyzdlcore.loader.Loader;
+import xyzdlcore.loader.LoaderEvent;
 
 public class TestCaseLoader {
 

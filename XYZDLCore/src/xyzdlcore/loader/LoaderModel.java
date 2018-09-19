@@ -1,4 +1,4 @@
-package com.core.loader;
+package xyzdlcore.loader;
 
 /**
  * @author xYzDl

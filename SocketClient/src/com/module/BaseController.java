@@ -1,8 +1,9 @@
 package com.module;
 
-import com.core.event.IEventHandler;
 import com.google.protobuf.Message;
 import com.xyzdl.CSocket;
+
+import xyzdlcore.event.IEventHandler;
 
 /**
  * @author xYzDl

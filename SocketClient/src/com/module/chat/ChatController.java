@@ -5,9 +5,6 @@ import java.awt.event.KeyEvent;
 import javax.swing.JTextField;
 
 import com.configuration.LanPack;
-import com.core.Console;
-import com.core.event.XEvent;
-import com.core.util.TimeUtil;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 import com.message.Chat.C_ChatMsg;
@@ -18,6 +15,10 @@ import com.message.Login.C_Login;
 import com.message.Login.S_Login;
 import com.message.Message.MessageEnum.MessageId;
 import com.module.BaseController;
+
+import xyzdlcore.Console;
+import xyzdlcore.event.XEvent;
+import xyzdlcore.util.TimeUtil;
 
 /**
  * @author xYzDl

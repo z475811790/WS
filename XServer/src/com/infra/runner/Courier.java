@@ -4,10 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import com.core.App;
-import com.core.event.XEvent;
 import com.infra.DestinationData;
-import com.infra.event.ModuleEvent;
 import com.infra.net.NSocket;
 
 /**
@@ -23,18 +20,19 @@ public class Courier {
 	private boolean runMark = true;// 线程停止标记,因为stop方法不建议使用,所以采用标记停止
 
 	public Courier() {
-		App.addModuleListener(ModuleEvent.SERVER_WORKER_SEND_SOCKET_MESSAGE, this::onSendSocketMsg);
 		new MsgSender().start();
 	}
 
-	@SuppressWarnings("unchecked")
-	private void onSendSocketMsg(XEvent xEvent) {
+	public void onSendSocketMsg(DestinationData data) {
 		synchronized (LOCK) {
-			if (xEvent.data instanceof DestinationData) {
-				dataQueue.offer((DestinationData) xEvent.data);
-			} else if (xEvent.data instanceof List) {
-				dataQueue.addAll((List<DestinationData>) xEvent.data);
-			}
+			dataQueue.offer(data);
+			LOCK.notify();
+		}
+	}
+
+	public void onSendSocketMsg(List<DestinationData> datas) {
+		synchronized (LOCK) {
+			dataQueue.addAll(datas);
 			LOCK.notify();
 		}
 	}

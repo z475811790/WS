@@ -1,4 +1,4 @@
-package com.core.constant;
+package xyzdlcore.constant;
 
 /**
  * @author xYzDl

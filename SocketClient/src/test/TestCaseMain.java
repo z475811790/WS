@@ -3,11 +3,12 @@ package test;
 import java.nio.ByteBuffer;
 
 import com.configuration.DataConfig;
-import com.core.ByteArray;
-import com.core.util.Hex;
 import com.google.protobuf.Message;
 import com.message.Info.C_INFO;
 import com.message.Message.MessageEnum.MessageId;
+
+import xyzdlcore.ByteArray;
+import xyzdlcore.util.Hex;
 
 public class TestCaseMain {
 	public static void main(String[] args) {

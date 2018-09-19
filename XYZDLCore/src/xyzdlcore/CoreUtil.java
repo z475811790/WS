@@ -1,4 +1,4 @@
-package com.core;
+package xyzdlcore;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -8,7 +8,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.tree.DefaultAttribute;
 
-import com.core.loader.LoaderBean;
+import xyzdlcore.loader.LoaderBean;
 
 /**
  * @author xYzDl

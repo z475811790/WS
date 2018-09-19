@@ -1,4 +1,4 @@
-package com.core.interfaces;
+package xyzdlcore.interfaces;
 
 /**
  * @author xYzDl

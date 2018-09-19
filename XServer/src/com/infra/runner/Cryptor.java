@@ -9,16 +9,15 @@ import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.core.App;
-import com.core.Console;
-import com.core.crypt.AESCrypt;
-import com.core.crypt.RSACrypt;
-import com.core.util.Hex;
 import com.infra.Config;
 import com.infra.DestinationData;
 import com.infra.SocketData;
-import com.infra.event.ModuleEvent;
 import com.infra.net.NSocket;
+
+import xyzdlcore.Console;
+import xyzdlcore.crypt.AESCrypt;
+import xyzdlcore.crypt.RSACrypt;
+import xyzdlcore.util.Hex;
 
 /**
  * @author xYzDl
@@ -36,6 +35,8 @@ public class Cryptor {
 	private ExecutorService deExePool = Executors.newCachedThreadPool();
 	private Queue<Encryptor> encryptorPool = new LinkedList<>();
 	private ExecutorService enExePool = Executors.newCachedThreadPool();
+	private Commander commander = new Commander();
+	private Courier courier = new Courier();
 
 	private boolean runMark = true;// 线程停止标记,因为stop方法不建议使用,所以采用标记停止
 
@@ -99,7 +100,7 @@ public class Cryptor {
 					// System.out.println(System.currentTimeMillis() - start);
 					sbs.dataBytes = bs;
 					// System.out.println("de:" + Hex.fromArray(bs));
-					App.dispatch(ModuleEvent.SERVER_WORKER_CRYPT_DECRYPT_COMPLETE, sbs);
+					commander.onDecryptComplete(sbs);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -120,7 +121,7 @@ public class Cryptor {
 			try {
 				if (des != null) {
 					if (des.socketId != null && _keyMap.get(des.socketId) != null) {
-						App.dispatch(ModuleEvent.SERVER_WORKER_SEND_SOCKET_MESSAGE, genData(des.socketId, des.msgByes));
+						courier.onSendSocketMsg(genData(des.socketId, des.msgByes));
 					}
 					if (des.socketIds != null && des.socketIds.size() > 0) {
 						List<DestinationData> list = new ArrayList<>();
@@ -132,7 +133,7 @@ public class Cryptor {
 									list.add(genData(socketId, des.msgByes));
 							}
 						}
-						App.dispatch(ModuleEvent.SERVER_WORKER_SEND_SOCKET_MESSAGE, list);
+						courier.onSendSocketMsg(list);
 					}
 				}
 			} catch (Exception e) {

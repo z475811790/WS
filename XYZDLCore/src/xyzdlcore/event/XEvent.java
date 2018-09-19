@@ -1,4 +1,4 @@
-package com.core.event;
+package xyzdlcore.event;
 
 /**
  * @author xYzDl

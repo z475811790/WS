@@ -2,9 +2,9 @@ package ztest;
 
 import org.junit.Test;
 
-import com.core.App;
-import com.core.Dispatcher;
-import com.core.event.XEvent;
+import xyzdlcore.App;
+import xyzdlcore.Dispatcher;
+import xyzdlcore.event.XEvent;
 
 public class TestCaseApp {
 	@Test

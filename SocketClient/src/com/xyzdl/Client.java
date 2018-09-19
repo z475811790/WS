@@ -7,11 +7,12 @@ import javax.swing.JFrame;
 import com.configuration.DataConfig;
 import com.configuration.GeneralConfig;
 import com.configuration.LanPack;
-import com.core.Console;
-import com.core.event.XEvent;
-import com.core.loader.LoaderBean;
-import com.core.util.AssetUtil;
 import com.module.ControllerRegister;
+
+import xyzdlcore.Console;
+import xyzdlcore.event.XEvent;
+import xyzdlcore.loader.LoaderBean;
+import xyzdlcore.util.AssetUtil;
 
 public class Client {
 

@@ -1,4 +1,4 @@
-package com.core;
+package xyzdlcore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.core.event.IEventHandler;
-import com.core.event.XEvent;
+import xyzdlcore.event.IEventHandler;
+import xyzdlcore.event.XEvent;
 
 /**
  * @author xYzDl

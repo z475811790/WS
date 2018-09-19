@@ -1,10 +1,6 @@
 package com.module.main;
 
 import com.configuration.LanPack;
-import com.core.App;
-import com.core.Console;
-import com.core.event.IEventHandler;
-import com.core.event.XEvent;
 import com.event.ModuleEvent;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.message.Main.C_Heartbeat;
@@ -12,6 +8,11 @@ import com.message.Main.S_SynHeartbeat;
 import com.message.Message.MessageEnum.MessageId;
 import com.module.BaseController;
 import com.xyzdl.XCTimer;
+
+import xyzdlcore.App;
+import xyzdlcore.Console;
+import xyzdlcore.event.IEventHandler;
+import xyzdlcore.event.XEvent;
 
 /**
  * @author xYzDl

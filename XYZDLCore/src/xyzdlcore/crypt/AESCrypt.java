@@ -1,4 +1,4 @@
-package com.core.crypt;
+package xyzdlcore.crypt;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,8 +8,8 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.core.ByteArray;
-import com.core.util.Hex;
+import xyzdlcore.ByteArray;
+import xyzdlcore.util.Hex;
 
 /**
  * @author xYzDl

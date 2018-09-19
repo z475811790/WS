@@ -1,7 +1,7 @@
 package ztest;
 
-import com.core.ByteArray;
-import com.core.util.Hex;
+import xyzdlcore.ByteArray;
+import xyzdlcore.util.Hex;
 
 public class TestCaseByteArray {
 

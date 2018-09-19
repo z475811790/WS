@@ -1,4 +1,4 @@
-package com.core.crypt;
+package xyzdlcore.crypt;
 
 import java.math.BigInteger;
 import java.security.KeyFactory;
@@ -12,7 +12,7 @@ import java.util.Arrays;
 
 import javax.crypto.Cipher;
 
-import com.core.util.XUtil;
+import xyzdlcore.util.XUtil;
 
 /**
  * @author xYzDl
