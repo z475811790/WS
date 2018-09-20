@@ -6,7 +6,6 @@ package com.service;
 import java.util.*;
 import com.entity.*;
 
-@SuppressWarnings("unused")
 public interface StudentService {
 
 	public Student selectById(Integer id);

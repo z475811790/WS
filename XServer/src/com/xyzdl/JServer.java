@@ -13,6 +13,7 @@ import com.componet.BaseService;
 import com.infra.Config;
 import com.infra.net.NServerSocket;
 
+import xyzdlcore.App;
 import xyzdlcore.Console;
 import xyzdlcore.XTimer;
 import xyzdlcore.event.IEventHandler;
@@ -51,6 +52,7 @@ public class JServer {
 	private void initSpringContext() {
 		// 一定要注意外部不要使用Spring容器中的类！！
 		ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+		App.springContext = context;
 		BaseCommand.initContext(context);
 		Console.addMsg("SpringContext is Initialized Successfully");
 		Map<String, BaseService> map = context.getBeansOfType(BaseService.class);
@@ -58,7 +60,7 @@ public class JServer {
 
 			@Override
 			public void execute(XEvent xEvent) throws Exception {
-				// TODO 定时任务属于具体业务，应该放到专门的地方，用quatrz
+				// TODO 定时任务属于具体业务，应该放到专门的地方，因为比较耗时，所以用quatrz
 				map.values().forEach(e -> {
 					e.synBatchInsert();
 					e.synBatchUpdate();

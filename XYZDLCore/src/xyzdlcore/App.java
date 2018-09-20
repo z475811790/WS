@@ -11,6 +11,11 @@ public class App {
 
 	private static Dispatcher moduleDispatcher = new Dispatcher(); // 全局MVC共享事件派发器
 
+	/**
+	 * Spring 容器的全局引用
+	 */
+	public static Object springContext = null;
+
 	public App() {
 	}
 
