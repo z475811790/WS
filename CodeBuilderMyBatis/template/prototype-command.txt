@@ -3,10 +3,26 @@
  */
 package {packagename};
 
-import java.util.*;
-import com.entity.*;
+import com.action.*;
+import com.componet.BaseCommand;
 
-@SuppressWarnings("unused")
-public interface {interface} {
+public class {cmd} extends BaseCommand {
 
-{methods}}
+	public {cmd}() {
+	}
+
+	@Override
+	public void execute() throws Exception {
+		super.execute();
+
+		{action} action = getAction({action}.class);
+		action.{method}(data);
+
+		dispose();
+	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+	}
+}

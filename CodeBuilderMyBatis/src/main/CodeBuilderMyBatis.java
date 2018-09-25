@@ -143,7 +143,7 @@ public class CodeBuilderMyBatis {
 		labelMap.put("gettersetter", gettersetter);
 
 		System.out.println(StringUtil.formatLabel(protoStr, labelMap));
-		StringUtil.contentToTxt(cfgV("out.dir.code") + cfgV("package.entity").replace('.', '/') + "/" + className + cfgV("file.suffix"), StringUtil.formatLabel(protoStr, labelMap));
+		StringUtil.contentToTxt(cfgV("out.dir.code") + cfgV("package.entity").replace('.', '\\') + "\\" + className + cfgV("file.suffix"), StringUtil.formatLabel(protoStr, labelMap));
 	}
 
 	private static void genDaoInterfaceFile(String tableName, String protoStr) {
@@ -162,14 +162,14 @@ public class CodeBuilderMyBatis {
 		labelMap.put("delete", DaoGenerator.genDelete(tableName, className, arrayList));
 
 		System.out.println(StringUtil.formatLabel(protoStr, labelMap));
-		StringUtil.contentToTxt(cfgV("out.dir.code") + cfgV("package.dao").replace('.', '/') + "/" + javaName + cfgV("file.suffix"), StringUtil.formatLabel(protoStr, labelMap));
+		StringUtil.contentToTxt(cfgV("out.dir.code") + cfgV("package.dao").replace('.', '\\') + "\\" + javaName + cfgV("file.suffix"), StringUtil.formatLabel(protoStr, labelMap));
 	}
 
 	private static void genDaoMapperFile(String tableName, String protoStr) {
 		String className = StringUtil.underlineToCamel(tableName).substring(TABLE_PRE_LEN) + cfgV("class.suffix");
 		String javaName = "I" + className + "Dao";
 		String namespace = cfgV("package.dao") + "." + javaName;
-		String fileName = cfgV("out.dir.code") + cfgV("package.mapper").replace('.', '/') + "/" + javaName + ".xml";
+		String fileName = cfgV("out.dir.code") + cfgV("package.mapper").replace('.', '\\') + "\\" + javaName + ".xml";
 		ArrayList<FieldInfo> arrayList = Converter.parseDLL2Array(tableName, tableDLLMap.get(tableName), TABLE_PRE_LEN);
 		String entityMap = DaoGenerator.genXMLResultMap(tableName, className, arrayList);
 
@@ -201,8 +201,8 @@ public class CodeBuilderMyBatis {
 		String className = StringUtil.underlineToCamel(tableName).substring(TABLE_PRE_LEN) + cfgV("class.suffix");
 		String javaName = className + "Service";
 		String daoName = cfgV("package.dao") + ".I" + className + "Dao";
-		String fileName = cfgV("out.dir.code") + cfgV("package.service").replace('.', '/') + "/" + javaName + ".java";
-		String implFileName = cfgV("out.dir.code") + cfgV("package.service").replace('.', '/') + "/impl/" + javaName + "Impl.java";
+		String fileName = cfgV("out.dir.code") + cfgV("package.service").replace('.', '\\') + "\\" + javaName + ".java";
+		String implFileName = cfgV("out.dir.code") + cfgV("package.service").replace('.', '\\') + "\\impl\\" + javaName + "Impl.java";
 
 		String customImport = null;
 		String customMethod = null;
