@@ -3,10 +3,8 @@
  */
 package {packagename};
 
-import java.util.*;
-import com.entity.*;
+import com.infra.CommandData;
 
-@SuppressWarnings("unused")
 public interface {interface} {
 
 {methods}}

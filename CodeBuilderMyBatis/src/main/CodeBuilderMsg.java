@@ -1,10 +1,7 @@
 package main;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,9 +20,10 @@ public class CodeBuilderMsg {
 	public static void main(String[] args) {
 		Config.initProperties();
 		String msgDir = cfgV("in.dir.message");
+		String actionDir = cfgV("out.dir.action");
+		String commandDir = cfgV("out.dir.command");
 		String protoCommandStr = StringUtil.readToString(cfgV("prototype.command.file"));
 		String protoActionStr = StringUtil.readToString(cfgV("prototype.action.file"));
-		String protoActionImplStr = StringUtil.readToString(cfgV("prototype.action.impl.file"));
 		File file = new File(msgDir);
 		if (!file.exists())
 			return;
@@ -49,26 +47,77 @@ public class CodeBuilderMsg {
 				map.put(klass, klass);
 				System.out.println(klass);
 			}
-		}
-	}
 
-	public static void initProperties() {
-		try {
-			// 使用InPutStream流读取properties文件
-			BufferedReader bufferedReader;
-			bufferedReader = new BufferedReader(new FileReader("builderConfig.properties"));
-			Config.properties.load(bufferedReader);
-			bufferedReader = new BufferedReader(new FileReader("typeMap.properties"));
-			Converter.typeProperties.load(bufferedReader);
-			// 获取key对应的value值
-			System.out.println("Load builderConfig.properties Successfully");
-
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 
 	public static String cfgV(String k) {
 		return Config.properties.getProperty(k);
+	}
+
+	private static void genActionFile(String fileName, String protoStr, Map<String, Object> methodMap) {
+		String className = StringUtil.underlineToCamel(tableName).substring(TABLE_PRE_LEN) + cfgV("class.suffix");
+		String javaName = className + "Service";
+		String daoName = cfgV("package.dao") + ".I" + className + "Dao";
+		String fileName = cfgV("out.dir.code") + cfgV("package.service").replace('.', '/') + "/" + javaName + ".java";
+		String implFileName = cfgV("out.dir.code") + cfgV("package.service").replace('.', '/') + "/impl/" + javaName
+				+ "Impl.java";
+
+		String customImport = null;
+		String customMethod = null;
+
+		Pattern pattern;
+		Matcher matcher;
+		String oldFile = StringUtil.readToString(implFileName);
+		if (oldFile != null) {
+			pattern = Pattern.compile("//S([\\s\\S]*)//E");
+			matcher = pattern.matcher(oldFile);
+			if (matcher.find()) {
+				customImport = matcher.group();
+			}
+			pattern = Pattern.compile("/\\* S \\*/([\\s\\S]*)/\\* E \\*/");
+			matcher = pattern.matcher(oldFile);
+			if (matcher.find()) {
+				customMethod = matcher.group();
+			}
+		}
+
+		Map<String, Object> labelMap = new HashMap<String, Object>();
+		labelMap.put("packagename", cfgV("package.service"));
+		labelMap.put("interfacepackage", cfgV("package.service") + ".*");
+		labelMap.put("implpackagename", cfgV("package.service") + ".impl");
+		labelMap.put("javaname", javaName + "Impl");
+		labelMap.put("interface", javaName);
+		labelMap.put("entityclass", className);
+		labelMap.put("daoclass", daoName);
+
+		if (customImport != null) {
+			labelMap.put("//S//E", customImport);
+		} else {
+			labelMap.put("//S//E", "//S\r\n//E");
+		}
+		if (customMethod != null) {
+			labelMap.put("/* S *//* E */", customMethod);
+		} else {
+			labelMap.put("/* S *//* E */", "/* S */\r\n\t/* E */");
+		}
+
+		String implResultText = StringUtil.formatLabel(protoStrImpl, labelMap);
+
+		pattern = Pattern.compile("public.*\\)[\\s+|\\{]");
+		matcher = pattern.matcher(implResultText);
+		String methodAnno = "";
+		while (matcher.find()) {
+			methodAnno += "\t" + matcher.group().trim() + ";\r\n\r\n";
+		}
+
+		labelMap.put("methods", methodAnno);
+
+		String resultText = StringUtil.formatLabel(protoStr, labelMap);
+
+		System.out.println(resultText);
+		System.out.println(implResultText);
+		StringUtil.contentToTxt(fileName, resultText);
+		StringUtil.contentToTxt(implFileName, implResultText);
 	}
 }
