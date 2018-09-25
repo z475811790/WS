@@ -1,0 +1,13 @@
+{classdesc}
+package {packagename};
+
+{import}
+@SuppressWarnings("unused")
+{common}public class {classname} {extends}{
+{fields}
+
+{constructor}
+
+{constructorarg}
+{gettersetter}
+}

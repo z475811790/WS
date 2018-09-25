@@ -29,7 +29,7 @@ public class ChatActionImpl extends BaseAction implements ChatAction {
 	public void C_LoginChat(CommandData data) throws Exception {
 		C_LoginChat c = C_LoginChat.parseFrom(data.msgBytes);
 
-		System.out.println("ChatRoom:" + c.getRoomNumber());
+//		System.out.println("ChatRoom:" + c.getRoomNumber());
 		S_LoginChat.Builder builder = S_LoginChat.newBuilder();
 		builder.setRoomNumber(4758);
 		outer.sendSocketMessage(builder.build(), data.socketId);

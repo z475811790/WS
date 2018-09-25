@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="dao.IEmployeeDao">
+	<!-- 是否开启二级缓存,如果是只读的配置数据，就一定要打开二级缓存 -->
+	<!-- <cache eviction="LRU" flushInterval="20000" size="1024" readOnly="true" /> -->
+	<!-- <cache /> -->
+	<sql id="TABLE_NAME">
+		t_employee
+	</sql>
+	<resultMap id="entityMap" type="Employee">
+		<id property="id" column="id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+		<result property="password" column="password" javaType="java.lang.String" jdbcType="VARCHAR" />
+		<result property="birth" column="birth" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+		<result property="empName" column="emp_name" javaType="java.lang.String" jdbcType="VARCHAR" />
+		<result property="gender" column="gender" javaType="java.lang.String" jdbcType="VARCHAR" />
+		<result property="isManager" column="is_manager" javaType="java.lang.Boolean" jdbcType="BIT" />
+		<result property="phone" column="phone" javaType="java.lang.String" jdbcType="VARCHAR" />
+	</resultMap>
+	<!--自动生成XML时，以下注释标签包括的内容将会被保留下来-->
+	<!--S -->
+	<!--E -->
+</mapper>
