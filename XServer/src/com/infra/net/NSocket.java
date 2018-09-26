@@ -92,8 +92,8 @@ public class NSocket {
 		App.dispatch(ModuleEvent.SOCKET_STATE_TO_NORMAL, args.socketId);
 	}
 
-	public static void sendMsgData(SocketOutData destinationData) {
-		cryptor.encrypt(destinationData);
+	public static void sendMsgData(SocketOutData socketOutData) {
+		cryptor.encrypt(socketOutData);
 	}
 
 	//

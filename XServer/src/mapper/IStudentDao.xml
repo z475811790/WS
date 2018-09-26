@@ -16,7 +16,7 @@
 	</resultMap>
 	<!--自动生成XML时，以下注释标签包括的内容将会被保留下来-->
 	<!--S -->
-	<select id="selectByAgeRange" resultMap="entityMap" parameterType="int">
+	<select id="selectByAgeRange" resultMap="entityMap" parameterType="Integer">
 		SELECT * FROM
 		<include refid="TABLE_NAME" />
 		WHERE age &lt;= #{age}

@@ -1,10 +1,7 @@
 package com.service.impl;
 
 import java.util.*;
-import org.mybatis.spring.SqlSessionTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.componet.BaseService;
 import com.entity.*;
 import com.exception.*;
@@ -26,14 +23,22 @@ public class StudentServiceImpl extends BaseService implements StudentService{
 	
 	@CacheGet(cache = "StudentCache")
 	@Override
-	public Student selectById(int id) {
+	public Student selectById(Integer id) {
 		return sqlSessionTemplate.selectOne(DAO + "selectById", id);
 	}
 
 	@CacheSet(cache = "StudentCache", type = CacheSetType.REF_ID)
 	@Override
-	public int insert(Student entity) {
-		return sqlSessionTemplate.insert(DAO + "insert", entity);
+	public Student insert(Student entity) {
+		if (_autoIncrementValue == -1) {
+			entity.setId(null);
+			sqlSessionTemplate.insert(DAO + "insert", entity);
+			_autoIncrementValue = entity.getId() + 1;
+			return entity;
+		}
+		entity.setId(_autoIncrementValue++);
+		_insertSet.add(entity);
+		return entity;
 	}
 
 	/**
@@ -43,13 +48,14 @@ public class StudentServiceImpl extends BaseService implements StudentService{
 	 */
 	@CacheSet(cache = "StudentCache", type = CacheSetType.REF_ID)
 	@Override
-	public int update(Student entity) {
-		return sqlSessionTemplate.update(DAO + "update", entity);
+	public Student update(Student entity) {
+		_updateSet.add(entity);
+		return entity;
 	}
 
 	@CacheDelete(cache = "StudentCache")
 	@Override
-	public int deleteById(int id) {
+	public int deleteById(Integer id) {
 		return sqlSessionTemplate.update(DAO + "deleteById", id);
 	}
 	//自定义部分在代码自动生成时不会被覆盖

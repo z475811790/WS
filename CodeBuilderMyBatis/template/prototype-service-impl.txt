@@ -1,9 +1,8 @@
 package {implpackagename};
 
 import java.util.*;
-import org.mybatis.spring.SqlSessionTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.componet.BaseService;
 import com.entity.*;
 import com.exception.*;
 import com.infra.cache.*;
@@ -23,14 +22,22 @@ public class {javaname} extends BaseService implements {interface}{
 	
 	@CacheGet(cache = "{entityclass}Cache")
 	@Override
-	public {entityclass} selectById(int id) {
+	public {entityclass} selectById(Integer id) {
 		return sqlSessionTemplate.selectOne(DAO + "selectById", id);
 	}
 
 	@CacheSet(cache = "{entityclass}Cache", type = CacheSetType.REF_ID)
 	@Override
-	public int insert({entityclass} entity) {
-		return sqlSessionTemplate.insert(DAO + "insert", entity);
+	public {entityclass} insert({entityclass} entity) {
+		if (_autoIncrementValue == -1) {
+			entity.setId(null);
+			sqlSessionTemplate.insert(DAO + "insert", entity);
+			_autoIncrementValue = entity.getId() + 1;
+			return entity;
+		}
+		entity.setId(_autoIncrementValue++);
+		_insertSet.add(entity);
+		return entity;
 	}
 
 	/**
@@ -40,13 +47,14 @@ public class {javaname} extends BaseService implements {interface}{
 	 */
 	@CacheSet(cache = "{entityclass}Cache", type = CacheSetType.REF_ID)
 	@Override
-	public int update({entityclass} entity) {
-		return sqlSessionTemplate.update(DAO + "update", entity);
+	public {entityclass} update({entityclass} entity) {
+		_updateSet.add(entity);
+		return entity;
 	}
 
 	@CacheDelete(cache = "{entityclass}Cache")
 	@Override
-	public int deleteById(int id) {
+	public int deleteById(Integer id) {
 		return sqlSessionTemplate.update(DAO + "deleteById", id);
 	}
 	//自定义部分在代码自动生成时不会被覆盖

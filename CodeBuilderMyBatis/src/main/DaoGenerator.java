@@ -55,7 +55,7 @@ public class DaoGenerator {
 		for (FieldInfo fieldInfo : arrayList) {
 			if (index++ == 0) {
 				options = String.format(options, fieldInfo.property);
-				continue;
+//				continue;
 			}
 			names += fieldInfo.column + ", ";
 			values += String.format(v, fieldInfo.property, fieldInfo.typeHandler == null ? "" : ", typeHandler=" + fieldInfo.typeHandler);

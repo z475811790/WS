@@ -20,10 +20,10 @@ public class SocketOuter {
 	 * 给外部使用的向所有端发消息
 	 */
 	public void sendSocketMessageToAll(Message msg) {
-		SocketOutData des = new SocketOutData();
-		des.socketIds = socketMap.getAllSocketIds();
-		des.msgByes = packMsg(msg);
-		NSocket.sendMsgData(des);
+		SocketOutData data = new SocketOutData();
+		data.socketIds = socketMap.getAllSocketIds();
+		data.msgByes = packMsg(msg);
+		NSocket.sendMsgData(data);
 	}
 
 	/**

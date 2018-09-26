@@ -11,7 +11,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.action.ChatAction;
 import com.componet.SocketOuter;
 import com.entity.Student;
+import com.entity.User;
 import com.service.StudentService;
+import com.service.UserService;
+import com.service.impl.UserServiceImpl;
 import com.util.CommonUtil;
 
 /**
@@ -29,13 +32,16 @@ public class TestCaseSpringContext {
 	@Autowired
 	public SocketOuter socketOuter;
 
+	@Autowired
+
 	@Test
 	public void studentServiceTest() {
 		studentService.selectById(1);
 		studentService.selectById(1);
-		
+
 		System.out.println(socketOuter);
 	}
+
 	@Test
 	public void temp2() {
 		List<Student> list = studentService.selectByAgeRange(19);
@@ -50,8 +56,19 @@ public class TestCaseSpringContext {
 			CommonUtil.outObject(s);
 		}
 	}
+
+	@Autowired
+	private UserServiceImpl userService;
+
 	@Test
 	public void temp3() {
-		
+		User user = userService.selectById(1);
+		System.out.println(user.getAccount());
+		user.setUserId(2);
+		userService.insert(user);
+		userService.insert(user);
+		userService.flushCache();
+		System.out.println(user.getUserId());
+
 	}
 }

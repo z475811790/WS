@@ -10,13 +10,13 @@ public interface StudentService {
 
 	public String getDAO();
 
-	public Student selectById(int id);
+	public Student selectById(Integer id);
 
-	public int insert(Student entity);
+	public Student insert(Student entity);
 
-	public int update(Student entity);
+	public Student update(Student entity);
 
-	public int deleteById(int id);
+	public int deleteById(Integer id);
 
 	public List<Student> selectByAgeRange(int age);
 

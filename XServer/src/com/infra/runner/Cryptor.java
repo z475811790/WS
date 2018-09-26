@@ -62,13 +62,13 @@ public class Cryptor {
 		}
 	}
 
-	public void encrypt(SocketOutData destinationData) {
+	public void encrypt(SocketOutData socketOutData) {
 		Encryptor encryptor;
 		synchronized (LOCK_ENCRYPTOR_POOL) {
 			encryptor = encryptorPool.poll();
 			if (encryptor == null)
 				encryptor = new Encryptor();
-			encryptor.des = destinationData;
+			encryptor.data = socketOutData;
 			enExePool.execute(encryptor);
 		}
 	}
@@ -114,23 +114,23 @@ public class Cryptor {
 	}
 
 	class Encryptor implements Runnable {
-		public SocketOutData des;
+		public SocketOutData data;
 
 		@Override
 		public void run() {
 			try {
-				if (des != null) {
-					if (des.socketId != null && _keyMap.get(des.socketId) != null) {
-						courier.onSendSocketMsg(genData(des.socketId, des.msgByes));
+				if (data != null) {
+					if (data.socketId != null && _keyMap.get(data.socketId) != null) {
+						courier.onSendSocketMsg(genData(data.socketId, data.msgByes));
 					}
-					if (des.socketIds != null && des.socketIds.size() > 0) {
+					if (data.socketIds != null && data.socketIds.size() > 0) {
 						List<SocketOutData> list = new ArrayList<>();
 						if (Config.IS_SAME_AESKEY) {
 							// TODO:AESKEY是同一个的情况
 						} else {
-							for (String socketId : des.socketIds) {
+							for (String socketId : data.socketIds) {
 								if (_keyMap.get(socketId) != null)
-									list.add(genData(socketId, des.msgByes));
+									list.add(genData(socketId, data.msgByes));
 							}
 						}
 						courier.onSendSocketMsg(list);

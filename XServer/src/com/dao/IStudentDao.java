@@ -23,7 +23,7 @@ public interface IStudentDao {
 			})
 	public Student selectById(int id);
 
-	@Insert("INSERT INTO t_student (user_name, sex, age, birthday, pro, reward_info) VALUES (#{userName}, #{sex}, #{age}, #{birthday}, #{pro, typeHandler=typehandler.StringMapTypeHandler}, #{rewardInfo, typeHandler=typehandler.StringListTypeHandler})")
+	@Insert("INSERT INTO t_student (id, user_name, sex, age, birthday, pro, reward_info) VALUES (#{id}, #{userName}, #{sex}, #{age}, #{birthday}, #{pro, typeHandler=typehandler.StringMapTypeHandler}, #{rewardInfo, typeHandler=typehandler.StringListTypeHandler})")
 	@Options(useGeneratedKeys = true, keyProperty = "id")
 	public int insert(Student student);
 

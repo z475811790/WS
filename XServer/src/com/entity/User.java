@@ -1,9 +1,16 @@
+/**
+ * Created by xYzDl Builder
+ * Table: t_user
+ */
 package com.entity;
 
 import java.util.Date;
+import java.util.Map;
+import java.util.List;
 
+@SuppressWarnings("unused")
 public class User {
-	private Integer id;
+	private Integer userId;
 	private String account;
 	private String password;
 	private Boolean isAdmin;
@@ -12,12 +19,21 @@ public class User {
 	public User() {
 	}
 
-	public Integer getId() {
-		return id;
+	public User(Integer userId, String account, String password, Boolean isAdmin, Date createDate) {
+		this.userId = userId;
+		this.account = account;
+		this.password = password;
+		this.isAdmin = isAdmin;
+		this.createDate = createDate;
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
 	}
 
 	public String getAccount() {
@@ -51,5 +67,4 @@ public class User {
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
 	}
-
 }
