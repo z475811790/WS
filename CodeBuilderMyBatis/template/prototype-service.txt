@@ -6,7 +6,6 @@ package {packagename};
 import java.util.*;
 import com.entity.*;
 
-@SuppressWarnings("unused")
 public interface {interface} {
 
 {methods}}

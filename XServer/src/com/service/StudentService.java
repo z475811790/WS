@@ -8,13 +8,16 @@ import com.entity.*;
 
 public interface StudentService {
 
-	public Student selectById(Integer id);
+	public String getDAO();
 
-	public Student insert(Student entity);
+	public Student selectById(int id);
 
-	public Student update(Student entity);
+	public int insert(Student entity);
 
-	public int deleteById(Integer id);
+	public int update(Student entity);
+
+	public int deleteById(int id);
 
 	public List<Student> selectByAgeRange(int age);
+
 }

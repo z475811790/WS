@@ -11,10 +11,10 @@
 		<result property="sex" column="sex" javaType="java.lang.String" jdbcType="VARCHAR" />
 		<result property="age" column="age" javaType="java.lang.Integer" jdbcType="INTEGER" />
 		<result property="birthday" column="birthday" javaType="java.util.Date" jdbcType="TIMESTAMP" />
-		<result property="pro" column="pro" javaType="java.util.Map" jdbcType="VARCHAR" typeHandler="typehandler.StringMapTypeHandler" />
-		<result property="rewardInfo" column="reward_info" javaType="java.util.List" jdbcType="VARCHAR" typeHandler="typehandler.StringListTypeHandler" />
+		<result property="pro" column="pro" javaType="java.util.Map" jdbcType="VARCHAR"  typeHandler="typehandler.StringMapTypeHandler"/>
+		<result property="rewardInfo" column="reward_info" javaType="java.util.List" jdbcType="VARCHAR"  typeHandler="typehandler.StringListTypeHandler"/>
 	</resultMap>
-	<!--自动生成XML时，以下注释标签包括的内容将会被保留下来 -->
+	<!--自动生成XML时，以下注释标签包括的内容将会被保留下来-->
 	<!--S -->
 	<select id="selectByAgeRange" resultMap="entityMap" parameterType="int">
 		SELECT * FROM

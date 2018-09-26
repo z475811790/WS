@@ -4,35 +4,31 @@
  */
 package com.entity;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 import java.util.List;
 
-public class Student implements Serializable{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1534564827894800883L;
-	/** id编号 */
+@SuppressWarnings("unused")
+public class Student {
+	/**id编号*/
 	private Integer id;
-	/** 名字 */
+	/**名字*/
 	private String userName;
-	/** 性别 */
+	/**性别*/
 	private String sex;
-	/** 年龄 */
-	private int age;
-	/** 生日 */
+	/**年龄*/
+	private Integer age;
+	/**生日*/
 	private Date birthday;
-	/** 属性 1;3;5 */
+	/**属性 1;3;5*/
 	private Map<String, String> pro;
-	/** 奖励信息 1;5 */
+	/**奖励信息 1;5*/
 	private List<String> rewardInfo;
 
 	public Student() {
 	}
 
-	public Student(Integer id, String userName, String sex, int age, Date birthday, Map<String, String> pro, List<String> rewardInfo) {
+	public Student(Integer id, String userName, String sex, Integer age, Date birthday, Map<String, String> pro, List<String> rewardInfo) {
 		this.id = id;
 		this.userName = userName;
 		this.sex = sex;
@@ -41,6 +37,7 @@ public class Student implements Serializable{
 		this.pro = pro;
 		this.rewardInfo = rewardInfo;
 	}
+
 
 	public Integer getId() {
 		return id;
@@ -66,11 +63,11 @@ public class Student implements Serializable{
 		this.sex = sex;
 	}
 
-	public int getAge() {
+	public Integer getAge() {
 		return age;
 	}
 
-	public void setAge(int age) {
+	public void setAge(Integer age) {
 		this.age = age;
 	}
 

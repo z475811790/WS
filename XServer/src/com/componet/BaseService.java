@@ -49,4 +49,19 @@ public abstract class BaseService {
 		session.close();
 		_updateSet.clear();
 	}
+
+	/**
+	 * 执行全表操作前需要强制同步缓存到数据库，尽量不要有全表操作，即使有也要注意优化操作，注意要先插入数据再更新
+	 * 
+	 * @return 插入和更新总数
+	 */
+	public int flushCache() {
+		int numInsert = _insertSet.size();
+		int numUpdate = _updateSet.size();
+		if (numInsert > 0)
+			synBatchInsert();
+		if (numUpdate > 0)
+			synBatchUpdate();
+		return numInsert + numUpdate;
+	}
 }

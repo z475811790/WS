@@ -6,7 +6,6 @@ import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.type.JdbcType;
 
 {import}
-@SuppressWarnings("unused")
 public interface {classname} {
 {select}
 
