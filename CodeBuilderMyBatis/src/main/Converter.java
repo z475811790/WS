@@ -37,7 +37,7 @@ public class Converter {
 	}
 
 	public static ArrayList<FieldInfo> parseDLL2Array(String tableName, String ddlSql, int tableLen) {
-		String dbType = CodeBuilderMyBatis.DBTYPE;
+		String dbType = CodeBuilderORM.DBTYPE;
 		switch (dbType) {
 		case "mysql":
 			return parseDLL4MySql(tableName, ddlSql, tableLen);
