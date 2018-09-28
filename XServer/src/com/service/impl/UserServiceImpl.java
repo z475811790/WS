@@ -12,7 +12,7 @@ import com.service.*;
 //E
 
 @Service
-public class UserServiceImpl extends BaseService implements UserService {
+public class UserServiceImpl extends BaseService implements UserService{
 	private static final String DAO = "com.dao.IUserDao.";
 	private int _autoIncrementValue = -1;// 用来记录当前自动增长Id的值，如果为-1，使用前就需要初始化为数据表对应当前自动增长的值
 
@@ -20,7 +20,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 	public String getDAO() {
 		return DAO;
 	}
-
+	
 	@CacheGet(cache = "UserCache")
 	@Override
 	public User selectById(Integer id) {
@@ -58,7 +58,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 	public int deleteById(Integer id) {
 		return sqlSessionTemplate.update(DAO + "deleteById", id);
 	}
-	// 自定义部分在代码自动生成时不会被覆盖
+	//自定义部分在代码自动生成时不会被覆盖
 	/* S */
 	/* E */
 }

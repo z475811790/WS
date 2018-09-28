@@ -8,14 +8,20 @@ import java.util.Date;
 import java.util.Map;
 import java.util.List;
 
-@SuppressWarnings("unused")
 public class Student {
+	/**id编号*/
 	private Integer id;
+	/**名字*/
 	private String userName;
+	/**性别*/
 	private String sex;
+	/**年龄*/
 	private Integer age;
+	/**生日*/
 	private Date birthday;
+	/**属性 1;3;5*/
 	private Map<String, String> pro;
+	/**奖励信息 1;5*/
 	private List<String> rewardInfo;
 
 	public Student() {

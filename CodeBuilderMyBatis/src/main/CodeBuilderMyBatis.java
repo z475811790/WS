@@ -40,10 +40,10 @@ public class CodeBuilderMyBatis {
 				return;
 
 			for (String key : tableDLLMap.keySet()) {
-				genEntityFile(key, protoStr);
+				String idField = genEntityFile(key, protoStr);
 				genDaoInterfaceFile(key, protoStrDaoInterface);
 				genDaoMapperFile(key, protoStrDaoMapper);
-				genServiceFile(key, protoStrService, protoStrServiceImpl);
+				genServiceFile(key, idField, protoStrService, protoStrServiceImpl);
 			}
 
 			if (cfgV("is.out.data.file").toLowerCase().equals("true")) {
@@ -65,7 +65,8 @@ public class CodeBuilderMyBatis {
 		String tableLike = "'" + cfgV("table.prefix") + "%'";
 		String database = "'" + cfgV("database") + "'";
 		if (cfgV("db.type").equals("mysql")) {
-			ResultSet rs = state.executeQuery("SELECT table_name FROM information_schema.tables WHERE table_schema = " + database + " AND table_type = 'base table' AND table_name LIKE " + tableLike);
+			ResultSet rs = state.executeQuery("SELECT table_name FROM information_schema.tables WHERE table_schema = "
+					+ database + " AND table_type = 'base table' AND table_name LIKE " + tableLike);
 			ResultSet rs1;
 			while (rs.next()) {
 				System.out.println(rs.getString("table_name"));
@@ -100,7 +101,7 @@ public class CodeBuilderMyBatis {
 		return c;
 	}
 
-	private static void genEntityFile(String tableName, String protoStr) {
+	private static String genEntityFile(String tableName, String protoStr) {
 		String className = StringUtil.underlineToCamel(tableName).substring(TABLE_PRE_LEN) + cfgV("class.suffix");
 		ArrayList<FieldInfo> arrayList = Converter.parseDLL2Array(tableName, tableDLLMap.get(tableName), TABLE_PRE_LEN);
 
@@ -109,6 +110,7 @@ public class CodeBuilderMyBatis {
 		String assign = "";
 		String gettersetter = "";
 		String targetType, assignItem, XName, argItem, getX, setX;
+		String idField = null;
 		for (FieldInfo fieldInfo : arrayList) {
 			String targetName = fieldInfo.property;
 			if (fieldInfo.comment != null)
@@ -122,8 +124,13 @@ public class CodeBuilderMyBatis {
 			XName = targetName.substring(0, 1).toUpperCase() + targetName.substring(1);
 			getX = "get" + XName;
 			setX = "set" + XName;
-			gettersetter += String.format("\r\n\r\n\tpublic %s %s() {\r\n\t\treturn %s;\r\n\t}", targetType, getX, targetName);
+			gettersetter += String.format("\r\n\r\n\tpublic %s %s() {\r\n\t\treturn %s;\r\n\t}", targetType, getX,
+					targetName);
 			gettersetter += String.format("\r\n\r\n\tpublic void %s(%s) {\r\n%s\t}", setX, argItem, assignItem);
+
+			// 主键必须是第一个字段
+			if (idField == null)
+				idField = XName;
 		}
 		if (arg.length() > 1)
 			arg = arg.substring(0, arg.length() - 2);
@@ -143,7 +150,9 @@ public class CodeBuilderMyBatis {
 		labelMap.put("gettersetter", gettersetter);
 
 		System.out.println(StringUtil.formatLabel(protoStr, labelMap));
-		StringUtil.contentToTxt(cfgV("out.dir.code") + cfgV("package.entity").replace('.', '\\') + "\\" + className + cfgV("file.suffix"), StringUtil.formatLabel(protoStr, labelMap));
+		StringUtil.contentToTxt(cfgV("out.dir.code") + cfgV("package.entity").replace('.', '\\') + "\\" + className
+				+ cfgV("file.suffix"), StringUtil.formatLabel(protoStr, labelMap));
+		return idField;
 	}
 
 	private static void genDaoInterfaceFile(String tableName, String protoStr) {
@@ -162,7 +171,9 @@ public class CodeBuilderMyBatis {
 		labelMap.put("delete", DaoGenerator.genDelete(tableName, className, arrayList));
 
 		System.out.println(StringUtil.formatLabel(protoStr, labelMap));
-		StringUtil.contentToTxt(cfgV("out.dir.code") + cfgV("package.dao").replace('.', '\\') + "\\" + javaName + cfgV("file.suffix"), StringUtil.formatLabel(protoStr, labelMap));
+		StringUtil.contentToTxt(
+				cfgV("out.dir.code") + cfgV("package.dao").replace('.', '\\') + "\\" + javaName + cfgV("file.suffix"),
+				StringUtil.formatLabel(protoStr, labelMap));
 	}
 
 	private static void genDaoMapperFile(String tableName, String protoStr) {
@@ -197,12 +208,13 @@ public class CodeBuilderMyBatis {
 		StringUtil.contentToTxt(fileName, StringUtil.formatLabel(protoStr, labelMap));
 	}
 
-	private static void genServiceFile(String tableName, String protoStr, String protoStrImpl) {
+	private static void genServiceFile(String tableName, String idField, String protoStr, String protoStrImpl) {
 		String className = StringUtil.underlineToCamel(tableName).substring(TABLE_PRE_LEN) + cfgV("class.suffix");
 		String javaName = className + "Service";
 		String daoName = cfgV("package.dao") + ".I" + className + "Dao";
 		String fileName = cfgV("out.dir.code") + cfgV("package.service").replace('.', '\\') + "\\" + javaName + ".java";
-		String implFileName = cfgV("out.dir.code") + cfgV("package.service").replace('.', '\\') + "\\impl\\" + javaName + "Impl.java";
+		String implFileName = cfgV("out.dir.code") + cfgV("package.service").replace('.', '\\') + "\\impl\\" + javaName
+				+ "Impl.java";
 
 		String customImport = null;
 		String customMethod = null;
@@ -231,6 +243,7 @@ public class CodeBuilderMyBatis {
 		labelMap.put("interface", javaName);
 		labelMap.put("entityclass", className);
 		labelMap.put("daoclass", daoName);
+		labelMap.put("idfield", idField);
 
 		if (customImport != null) {
 			labelMap.put("//S//E", customImport);
@@ -297,7 +310,8 @@ public class CodeBuilderMyBatis {
 				pw.append("\t<row>");
 				int index = 0;
 				for (FieldInfo fieldInfo : arrayList) {
-					pw.append("<p>" + Converter.formatType(typeArr.get(index++), rs.getObject(fieldInfo.property)) + "</p>");
+					pw.append("<p>" + Converter.formatType(typeArr.get(index++), rs.getObject(fieldInfo.property))
+							+ "</p>");
 				}
 				pw.append("</row>\n");
 			}

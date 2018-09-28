@@ -18,6 +18,4 @@ public interface StudentService {
 
 	public int deleteById(Integer id);
 
-	public List<Student> selectByAgeRange(int age);
-
 }

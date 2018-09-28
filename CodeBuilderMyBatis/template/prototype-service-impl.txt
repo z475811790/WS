@@ -30,12 +30,12 @@ public class {javaname} extends BaseService implements {interface}{
 	@Override
 	public {entityclass} insert({entityclass} entity) {
 		if (_autoIncrementValue == -1) {
-			entity.setId(null);
+			entity.set{idfield}(null);
 			sqlSessionTemplate.insert(DAO + "insert", entity);
-			_autoIncrementValue = entity.getId() + 1;
+			_autoIncrementValue = entity.get{idfield}() + 1;
 			return entity;
 		}
-		entity.setId(_autoIncrementValue++);
+		entity.set{idfield}(_autoIncrementValue++);
 		_insertSet.add(entity);
 		return entity;
 	}

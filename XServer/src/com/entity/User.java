@@ -8,12 +8,16 @@ import java.util.Date;
 import java.util.Map;
 import java.util.List;
 
-@SuppressWarnings("unused")
 public class User {
+	/**主键*/
 	private Integer userId;
+	/**账号*/
 	private String account;
+	/**密码*/
 	private String password;
+	/**是否为管理员*/
 	private Boolean isAdmin;
+	/**创建时间*/
 	private Date createDate;
 
 	public User() {

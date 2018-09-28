@@ -44,17 +44,17 @@ public class TestCaseSpringContext {
 
 	@Test
 	public void temp2() {
-		List<Student> list = studentService.selectByAgeRange(19);
-		for (Student s : list) {
-			CommonUtil.outObject(s);
-		}
-		List<Student> list2 = studentService.selectByAgeRange(19);
-		for (Student s : list2) {
-			CommonUtil.outObject(s);
-		}
-		for (Student s : list2) {
-			CommonUtil.outObject(s);
-		}
+//		List<Student> list = studentService.selectByAgeRange(19);
+//		for (Student s : list) {
+//			CommonUtil.outObject(s);
+//		}
+//		List<Student> list2 = studentService.selectByAgeRange(19);
+//		for (Student s : list2) {
+//			CommonUtil.outObject(s);
+//		}
+//		for (Student s : list2) {
+//			CommonUtil.outObject(s);
+//		}
 	}
 
 	@Autowired

@@ -1,6 +1,7 @@
 package com.util;
 
 import com.entity.Student;
+import com.entity.User;
 
 /**
  * @author xYzDl
@@ -17,6 +18,8 @@ public class EntityUtil {
 	public static Integer getId(Object entity) {
 		if (entity instanceof Student)
 			return ((Student) entity).getId();
-		return null;
+		else if (entity instanceof User)
+			return ((Student) entity).getId();
+		return 0;
 	}
 }

@@ -60,11 +60,5 @@ public class StudentServiceImpl extends BaseService implements StudentService{
 	}
 	//自定义部分在代码自动生成时不会被覆盖
 	/* S */
-
-	@Override
-	public List<Student> selectByAgeRange(int age) {
-		flushCache();
-		return sqlSessionTemplate.selectList(DAO + "selectByAgeRange", age);
-	}
 	/* E */
 }
