@@ -11,10 +11,10 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.entity.EntityIdDef;
 import com.infra.cache.CacheDelete;
 import com.infra.cache.CacheGet;
 import com.infra.cache.CacheSet;
-import com.util.EntityUtil;
 
 /**
  * @author xYzDl
@@ -100,7 +100,7 @@ public class CacheAspect {
 			cacheKey = anno.preKey() + point.getArgs()[0].toString();
 			break;
 		case REF_ID:
-			cacheKey = anno.preKey() + EntityUtil.getId(point.getArgs()[0]);
+			cacheKey = anno.preKey() + EntityIdDef.getId(point.getArgs()[0]);
 			break;
 		}
 		if (cacheKey == null)
