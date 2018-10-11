@@ -11,6 +11,7 @@ public class EntityIdDef {
 			return ((Student) entity).getId();
 		if (entity instanceof User)
 			return ((User) entity).getUserId();
+
 		return null;
 	}
 }

@@ -4,9 +4,7 @@
  */
 package com.entity;
 
-import java.util.Date;
-import java.util.Map;
-import java.util.List;
+import java.util.*;
 
 public class User {
 	/**主键*/

@@ -1,0 +1,13 @@
+package {packagename};
+
+/**
+ * @author xYzDl
+ * @description 记录获取实体id的方法
+ */
+public class {classname} {
+
+	public static Integer getId(Object entity) {
+{content}
+		return null;
+	}
+}

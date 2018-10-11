@@ -12,13 +12,13 @@ import java.util.regex.Pattern;
  * @description 将数据库配置自动生成类定义,导出数据为XML文件，以及生成Spring+MyBatis持久层框架
  * @version 1.0.0
  */
-public class CodeBuilderMyBatis {
+public class CodeBuilderORM {
 	public static int TABLE_PRE_LEN;
 	public static String DBTYPE;
 
 	public static Map<String, String> tableDLLMap = new HashMap<String, String>();
 
-	public CodeBuilderMyBatis() {
+	public CodeBuilderORM() {
 	}
 
 	/**
@@ -36,15 +36,19 @@ public class CodeBuilderMyBatis {
 			String protoStrDaoMapper = StringUtil.readToString(cfgV("prototype.dao.mapper.file"));
 			String protoStrService = StringUtil.readToString(cfgV("prototype.service.file"));
 			String protoStrServiceImpl = StringUtil.readToString(cfgV("prototype.service.impl.file"));
+			String protoStrEntityId = StringUtil.readToString(cfgV("prototype.entity.id.file"));
 			if (protoStr == null)
 				return;
 
+			Map<String, String> tableIdMap = new HashMap<>();
 			for (String key : tableDLLMap.keySet()) {
 				String idField = genEntityFile(key, protoStr);
+				tableIdMap.put(key, idField);
 				genDaoInterfaceFile(key, protoStrDaoInterface);
 				genDaoMapperFile(key, protoStrDaoMapper);
 				genServiceFile(key, idField, protoStrService, protoStrServiceImpl);
 			}
+			genEntityIdDefFile(tableIdMap, protoStrEntityId);
 
 			if (cfgV("is.out.data.file").toLowerCase().equals("true")) {
 				genConfDataFile(conn);
@@ -149,7 +153,6 @@ public class CodeBuilderMyBatis {
 		labelMap.put("constructorarg", String.format("\tpublic %s(%s) {\r\n%s\t}", className, arg, assign));
 		labelMap.put("gettersetter", gettersetter);
 
-		System.out.println(StringUtil.formatLabel(protoStr, labelMap));
 		StringUtil.contentToTxt(cfgV("out.dir.code") + cfgV("package.entity").replace('.', '\\') + "\\" + className
 				+ cfgV("file.suffix"), StringUtil.formatLabel(protoStr, labelMap));
 		return idField;
@@ -273,6 +276,31 @@ public class CodeBuilderMyBatis {
 		System.out.println(implResultText);
 		StringUtil.contentToTxt(fileName, resultText);
 		StringUtil.contentToTxt(implFileName, implResultText);
+	}
+
+	private static void genEntityIdDefFile(Map<String, String> idMap, String protoStr) {
+		String[] strs = idMap.keySet().toArray(new String[idMap.keySet().size()]);
+		List<String> list = Arrays.asList(strs);
+		Collections.sort(list);// 按字母顺序排序
+
+		String ifString = "\t\tif (entity instanceof %s)\r\n\t\t\treturn ((%s) entity).get%s();\r\n";
+		String content = "";
+
+		for (String key : list) {
+			String val = idMap.get(key);
+			String className = StringUtil.underlineToCamel(key).substring(TABLE_PRE_LEN) + cfgV("class.suffix");
+			content += String.format(ifString, className, className, val);
+		}
+
+		Map<String, Object> labelMap = new HashMap<String, Object>();
+		labelMap.put("packagename", cfgV("package.entity"));
+		labelMap.put("classname", cfgV("entity.id.map.class"));
+		labelMap.put("content", content);
+
+		String resultText = StringUtil.formatLabel(protoStr, labelMap);
+		System.out.println(resultText);
+		StringUtil.contentToTxt(cfgV("out.dir.code") + cfgV("package.entity").replace('.', '\\') + "\\"
+				+ cfgV("entity.id.map.class") + cfgV("file.suffix"), resultText);
 	}
 
 	private static void genConfDataFile(Connection conn) throws Exception {
