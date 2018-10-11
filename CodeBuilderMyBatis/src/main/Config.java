@@ -18,7 +18,6 @@ public class Config {
 			// 获取key对应的value值
 			// properties.getProperty(String key);
 			System.out.println("Load builderConfig.properties Successfully");
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
