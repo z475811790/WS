@@ -66,8 +66,8 @@ public class CodeBuilderMsg {
 	 */
 	private static void genActionAndCommandFile(String actionName, Object[] methodList, String protoActionStr,
 			String protoCommandStr) {
-		String javaName = actionName + "Action";
-		String fileName = cfgV("out.dir.code") + cfgV("package.action").replace('.', '\\') + "\\" + javaName + ".java";
+		String javaName = actionName + "Action";// ChatAction
+		String fileName = cfgV("out.dir.code") + cfgV("package.action").replace('.', '\\') + "\\" + javaName + ".java";// ..ChatAction.java
 
 		Map<String, Object> labelMap = new HashMap<String, Object>();
 		labelMap.put("packagename", cfgV("package.action"));
@@ -103,9 +103,9 @@ public class CodeBuilderMsg {
 
 		Map<String, Object> labelMap = new HashMap<String, Object>();
 		labelMap.put("packagename", cfgV("package.command"));
-		labelMap.put("cmd", method + "CMD");
-		labelMap.put("action", actionName);
-		labelMap.put("method", method);
+		labelMap.put("cmd", method + "CMD");// C_ChatMsgCMD
+		labelMap.put("action", actionName);// ChatAction
+		labelMap.put("method", method);// C_ChatMsg
 		String resultText = StringUtil.formatLabel(protoCommandStr, labelMap);
 
 		StringUtil.contentToTxt(fileName, resultText);

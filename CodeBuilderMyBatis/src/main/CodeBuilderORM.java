@@ -29,7 +29,7 @@ public class CodeBuilderORM {
 		Connection conn = getConnection();
 		try {
 			initDLLMap(conn);
-			TABLE_PRE_LEN = cfgV("table.prefix").length() - cfgV("table.prefix").split("_").length;
+			TABLE_PRE_LEN = cfgV("table.prefix").length() - cfgV("table.prefix").split("_").length;// t_前缀去掉下划线后的长度
 			DBTYPE = cfgV("db.type");
 			String protoStr = StringUtil.readToString(cfgV("prototype.file"));
 			String protoStrDaoInterface = StringUtil.readToString(cfgV("prototype.dao.interface.file"));
@@ -63,6 +63,12 @@ public class CodeBuilderORM {
 		return Config.properties.getProperty(k);
 	}
 
+	/**
+	 * 以表名为主键，数据表定义语句为值，保存到一个Map里面
+	 * 
+	 * @param conn
+	 * @throws Exception
+	 */
 	public static void initDLLMap(Connection conn) throws Exception {
 		Statement state = conn.createStatement();
 		Statement state1 = conn.createStatement();
